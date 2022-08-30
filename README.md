@@ -59,6 +59,8 @@ Nginx, Apache, IIS, Express, or Any Web server that supports HTTP/1.1.
 
 - Accept, POST to Static Files, Response 200 OK.
 
+- client_max_body_size 35 Megabytes or more.
+
 - Timeout greater than 60 seconds.
 
 - Disable Access logs for Increasing server performance.
