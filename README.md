@@ -65,7 +65,9 @@ Nginx, Apache, IIS, Express, or Any Web server that supports HTTP/1.1.
 
 - Improve Time to First Byte (TTFB)
 
-- **[Follow our Nginx Config. ](https://github.com/openspeedtest/Nginx-Configuration)**
+- Warning! If you use run it behind **[a reverse proxy](https://github.com/openspeedtest/Nginx-Configuration)** you should increase post body content length to 35 Megabytes or more.
+
+- **[Follow our Nginx Config.](https://github.com/openspeedtest/Nginx-Configuration)**
 
   
 
