@@ -305,7 +305,7 @@ You have two options here. If you need a custom deployment, use our source code 
 sudo docker run --restart=unless-stopped --name openspeedtest -d -p 3000:3000 -p 3001:3001 openspeedtest/latest
 
 ````
-- Warning! If you use run it behind **[a reverse proxy](https://github.com/openspeedtest/Speed-Test/issues/4#issuecomment-1229157193)** you should increase post body content length to 35 Megabytes or more.
+- Warning! If you run it behind **[a reverse proxy](https://github.com/openspeedtest/Speed-Test/issues/4#issuecomment-1229157193)** you should increase post body content length to 35 Megabytes or more.
 
 - **[Follow our Nginx Config.](https://github.com/openspeedtest/Nginx-Configuration)**
 
