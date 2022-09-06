@@ -125,22 +125,22 @@ window.onload = function() {
       value : 0
     }, {
       degree : 570,
-      value : 1
+      value : 0.5
     }, {
       degree : 460,
-      value : 5
+      value : 1
     }, {
       degree : 337,
       value : 10
     }, {
       degree : 220,
-      value : 50
-    }, {
-      degree : 115,
       value : 100
     }, {
+      degree : 115,
+      value : 500
+    }, {
       degree : 0,
-      value : 300
+      value : 1000
     }];
     /** @type {string} */
     this.polygon = this.chart = this.element = "";
