@@ -211,7 +211,9 @@ window.onload = function() {
    * @return {undefined}
    */
   render.prototype.app = function() {
-    this.loader.fade("out", 500, this.ShowAppIntro());
+    this.loader.fade("out", 500);
+    this.ShowAppIntro();
+    this.UI_Desk.fade("in", 1E3);
   };
   /**
    * @return {undefined}
