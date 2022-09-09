@@ -22,9 +22,9 @@ window.onload = function () {
     ostOnload()
 };
 
-window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
-    console.log("Ready!");
-});
+// window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
+//     console.log("Ready!");
+// });
 
 (function (bb) {
     function g(a) {
@@ -395,7 +395,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }
 
         function notify() {
-            window.flutter_inappwebview.callHandler('kemerut', results);
+            try {
+                window.flutter_inappwebview.callHandler('kemerut', results);
+            } catch { }
         }
 
         function t() {
