@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+	</head>
+	<body>
+		<!-- Generator: Adobe Illustrator 18.0.0, SVG Export Plug-In  -->
+		<svg
+			version="1.1"
+			xmlns="http://www.w3.org/2000/svg"
+			xmlns:xlink="http://www.w3.org/1999/xlink"
+			xmlns:a="http://ns.adobe.com/AdobeSVGViewerExtensions/3.0/"
+			x="0px"
+			y="0px"
+			width="316px"
+			height="316px"
+			viewBox="0 0 316 316"
+			enable-background="new 0 0 316 316"
+			style="background-color: gray"
+			xml:space="preserve"
+		>
+			<defs></defs>
+			<!-- <circle
+   id="gauge"
+   r="150"
+   cx="158"
+   cy="158"
+   stroke="yellow"
+   stroke-width="16"
+   stroke-dasharray="calc(3.1416 * 200) calc(3.1416 * 300)"
+   transform="rotate(150, 158, 158)"
+   fill="none">
+</circle> -->
+			<circle
+				id="gauge"
+				r="90"
+				cx="158"
+				cy="158"
+				stroke="yellow"
+				stroke-width="0"
+				stroke-dasharray="calc(3.1416 * 120) calc(3.1416 * 180)"
+				transform="rotate(150, 158, 158)"
+				fill="yellow"
+			>
+				<!-- 1. SPEED TEST STARTING -->
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="r"
+					dur="300ms"
+					to="60"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="stroke-width"
+					dur="300ms"
+					to="8"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="stroke-dasharray"
+					dur="300ms"
+          calcMode="linear"
+					fill="freeze"
+				/>
+				<animateTransform
+					begin="indefinite"
+					class="gauge-connecting"
+					id="gauge-connecting-rotate-anim"
+					attributeName="transform"
+					dur="750ms"
+					type="rotate"
+					to="510,158,158"
+					calcMode="linear"
+					repeatCount="indefinite"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="fill"
+					dur="300ms"
+					to="transparent"
+					fill="freeze"
+				/>
+				<!-- 2. SPEED TEST PINGING -->
+				<animateTransform
+					class="gauge-starting"
+					id="gauge-starting-rotate-anim"
+					begin="gauge-connecting-rotate-anim.end"
+					attributeName="transform"
+					dur="750ms"
+					type="rotate"
+					to="510,158,158"
+					calcMode="linear"
+					fill="freeze"
+				/>
+        <!-- 3. SPEED TEST PREPARING -->
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="stroke-width"
+          dur="750ms"
+          to="16"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          fill="freeze"
+        />
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="stroke-dasharray"
+          dur="750ms"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          fill="freeze"
+        />
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="r"
+          dur="750ms"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          to="150"
+          fill="freeze"
+        />
+			</circle>
+			<text
+				x="50%"
+				y="50%"
+				text-anchor="middle"
+				text-align="center"
+				fill="white"
+				font="Ubuntu"
+				opacity="0"
+			>
+				...
+				<animate
+					class="text-status-pinging"
+					id="text-status-pinging-entrance"
+					begin="indefinite"
+					attributeName="opacity"
+					dur="300ms"
+          to="1"
+          fill="freeze"
+				/>
+				<animate
+          id="text-status-pinging-pulsing"
+					begin="text-status-pinging-entrance.end"
+					attributeName="opacity"
+					dur="1000ms"
+          values="1;0.75;1"
+          repeatCount="indefinite"
+				/>
+			</text>
+		</svg>
+		<button type="button" id="btnStart">Start</button>
+		<button type="button" id="btnPinging">Pinging</button>
+		<button type="button" id="btnPrepare">Prepare</button>
+		<script>
+			(function () {
+				const startButton = document.getElementById("btnStart");
+				startButton.onclick = function () {
+					var animations = document.getElementsByClassName("gauge-connecting");
+
+          const sda = document.querySelector('animate.gauge-connecting[attributeName="stroke-dasharray"]');
+          sda.setAttribute('to', `${getArcLength(80)}, ${getArcLength(120)}`);
+          
+					for (var anim of animations) {
+						anim.beginElement();
+					}
+				};
+
+				const pingingButton = document.getElementById("btnPinging");
+				pingingButton.onclick = function () {
+					var animations = document.getElementsByClassName("gauge-starting");
+					for (var anim of animations) {
+						if (anim.id == "gauge-starting-rotate-anim") {
+							const s = document.getElementById("gauge");
+							const w = window.getComputedStyle(s, null);
+							const t = w.getPropertyValue("transform");
+
+							var values = t.split("(")[1];
+							values = values.split(")")[0];
+							values = values.split(",");
+							var a = values[0];
+							var b = values[1];
+							var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+							console.log(angle);
+							anim.setAttribute(
+								"from",
+								`${angle >= 150 ? angle : angle + 360},158,158`
+							);
+							console.log(
+								((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+							);
+							anim.setAttribute(
+								"dur",
+								`${
+									((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+								}ms`
+							);
+						}
+						anim.beginElement();
+					}
+				};
+
+				document
+					.getElementById("gauge-starting-rotate-anim")
+					.addEventListener("endEvent", function () {
+						var animations = document.getElementsByClassName(
+							"text-status-pinging"
+						);
+						for (var anim of animations) {
+							anim.beginElement();
+						}
+						document
+							.getElementById("text-status-pinging-pulsing")
+							.beginElement();
+					});
+
+
+				const prepareButton = document.getElementById("btnPrepare");
+        prepareButton.onclick = function () {
+					var animations = document.getElementsByClassName("gauge-preparing");
+
+          const sda = document.querySelector('animate.gauge-preparing[attributeName="stroke-dasharray"]');
+          sda.setAttribute('to', `${getArcLength(200)}, ${getArcLength(300)}`);
+
+					for (var anim of animations) {
+						anim.beginElement();
+					}
+        }
+
+        function getArcLength(length) {
+          console.log(length * Math.PI);
+          return length * Math.PI;
+        }
+			})();
+		</script>
+	</body>
+</html>

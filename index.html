@@ -205,8 +205,138 @@ please contact support@openspeedtest.com
       
     </symbol>
 
-    <symbol id="mainGaugebg" viewBox="0 0 295.93 270.18">
-      <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" />
+    <symbol id="startButtonDesk" viewBox="0 0 295.93 270.18">
+      <!-- <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" /> -->
+      <circle
+				id="gauge"
+				r="72"
+				cx="158"
+				cy="158"
+				stroke="green"
+				stroke-width="0"
+				stroke-dasharray="calc(3.1416 * 96) calc(3.1416 * 144)"
+				transform="rotate(150, 158, 158)"
+				fill="green"
+			>
+				<!-- 1. SPEED TEST STARTING -->
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="r"
+					dur="300ms"
+					to="60"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="stroke-width"
+					dur="300ms"
+					to="8"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="stroke-dasharray"
+					dur="300ms"
+          calcMode="linear"
+					fill="freeze"
+				/>
+				<animateTransform
+					begin="indefinite"
+					class="gauge-connecting"
+					id="gauge-connecting-rotate-anim"
+					attributeName="transform"
+					dur="750ms"
+					type="rotate"
+					to="510,158,158"
+					calcMode="linear"
+					repeatCount="indefinite"
+					fill="freeze"
+				/>
+				<animate
+					begin="indefinite"
+					class="gauge-connecting"
+					attributeName="fill"
+					dur="300ms"
+					to="transparent"
+					fill="freeze"
+				/>
+				<!-- 2. SPEED TEST PINGING -->
+				<animateTransform
+					class="gauge-starting"
+					id="gauge-starting-rotate-anim"
+					begin="gauge-connecting-rotate-anim.end"
+					attributeName="transform"
+					dur="750ms"
+					type="rotate"
+					to="510,158,158"
+					calcMode="linear"
+					fill="freeze"
+				/>
+        <!-- 3. SPEED TEST PREPARING -->
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="stroke-width"
+          dur="500ms"
+          to="16"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          fill="freeze"
+        />
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="stroke-dasharray"
+          dur="500ms"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          fill="freeze"
+        />
+				<animate
+          class="gauge-preparing"
+          begin="indefinite"
+          attributeName="r"
+          dur="500ms"
+          calcMode="spline"
+          keyTimes="0;1"
+          keySplines="0.3 0.3 0.1 1"
+          to="150"
+          fill="freeze"
+        />
+			</circle>
+			<text
+				x="50%"
+				y="50%"
+				text-anchor="middle"
+				text-align="center"
+				fill="white"
+				font="Ubuntu"
+				opacity="0"
+			>
+				...
+				<animate
+					class="text-status-pinging"
+					id="text-status-pinging-entrance"
+					begin="indefinite"
+					attributeName="opacity"
+					dur="300ms"
+          to="1"
+          fill="freeze"
+				/>
+				<animate
+          id="text-status-pinging-pulsing"
+					begin="text-status-pinging-entrance.end"
+					attributeName="opacity"
+					dur="1000ms"
+          values="1;0.75;1"
+          repeatCount="indefinite"
+				/>
+			</text>
     </symbol>
 
     <symbol id="mainGaugeBlue" viewBox="0 0 295.93 270.18">
@@ -473,8 +603,8 @@ please contact support@openspeedtest.com
       <!-- <title id="title1">Pure HTML5 Network Performance Estimation Tool. by OpenSpeedTest™️</title> -->
       <g id="UI-Desk">
 
-        <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" x="10.28" y="36.11" width="273.94"
-          height="245.39"></use>
+        <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" x="10.28" y="36.11"
+          width="273.94" height="245.39"></use>
         <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" x="10.28" y="36.11"
           width="273.94" height="245.39"></use>
         <use id="mainGaugeWhite-Desk" class="main-GaugeWhite" xlink:href="#mainGaugeWhite" x="10.28" y="36.11"
@@ -559,8 +689,7 @@ please contact support@openspeedtest.com
           NetMesh
         </use>
 
-        <use id="deskStart" class="deskStart" xlink:href="#mainGaugebg" x="10.28" y="36.11" width="273.94"
-          height="245.39"></use>
+        <use id="deskStart" class="deskStart" xlink:href="#startButtonDesk" x="10.28" y="36.11" width="273.94" height="245.39"></use>
         <use xlink:href="#resultCard" class="Cards" x="307.4" y="31" width="278.1" height="85.5"></use>
         <use xlink:href="#resultCard" class="Cards" x="307.4" y="228.5" width="278.1" height="85.5"></use>
         <use xlink:href="#resultCard" class="Cards" x="307.4" y="129.3" width="278.1" height="85.5"></use>
@@ -606,10 +735,10 @@ please contact support@openspeedtest.com
        
         </use>
 
-        <use id="startButtonDesk" class="startButton" xlink:href="#playButton" x="90" y="110" width="120"
+        <!-- <use id="startButtonDesk" class="startButton" xlink:href="#playButton" x="90" y="110" width="120"
         height="120">
         <title id="title1">Click here to run a speed test!</title>
-      </use>
+      </use> -->
 
         <use id="settingsDesk" class="Startsettings" xlink:href="#settings" x="100" y="260" width="100" height="40">
           <title id="title1">Options</title>

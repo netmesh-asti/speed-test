@@ -23,7 +23,7 @@ window.onload = function () {
 };
 
 window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
-    
+
 });
 
 (function (bb) {
@@ -163,14 +163,58 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         this.OpenSpeedtest.fade("in", 1E3)
     };
     r.prototype.userInterface = function () {
-        this.intro_Desk.fade("out", 1E3);
-        this.intro_Mob.fade("out",
-            1E3, this.ShowUI())
+        // ANIM 1. user pressed start
+        console.log("start");
+        var animations = document.getElementsByClassName("gauge-connecting");
+
+        const sda = document.querySelector('animate.gauge-connecting[attributeName="stroke-dasharray"]');
+        sda.setAttribute('to', `${getArcLength(80)}, ${getArcLength(120)}`);
+
+        for (var anim of animations) {
+            anim.beginElement();
+        }
+        this.ShowUI();
+        // this.intro_Desk.fade("out", 1E3);
+        // this.intro_Mob.fade("out",
+        //     1E3, this.ShowUI())
     };
     r.prototype.ShowUI = function () {
         this.UI_Desk.fade("in", 1E3);
         this.UI_Mob.fade("in", 1E3, function (a) {
-            n = "Loaded";
+            // ANIM 2. 
+            var animations = document.getElementsByClassName("gauge-starting");
+            for (var anim of animations) {
+                if (anim.id == "gauge-starting-rotate-anim") {
+                    const s = document.getElementById("gauge");
+                    const w = window.getComputedStyle(s, null);
+                    const t = w.getPropertyValue("transform");
+
+                    var values = t.split("(")[1];
+                    values = values.split(")")[0];
+                    values = values.split(",");
+                    var a = values[0];
+                    var b = values[1];
+                    var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+                    console.log(angle);
+                    anim.setAttribute(
+                        "from",
+                        `${angle >= 150 ? angle : angle + 360},158,158`
+                    );
+                    console.log(
+                        ((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                    );
+                    anim.setAttribute(
+                        "dur",
+                        `${((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                        }ms`
+                    );
+                }
+                anim.beginElement();
+            }
+            document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', function () {
+                n = "Loaded";
+            });
             console.log("Developed by Vishnu. Email --\x3e me@vishnu.pro")
         })
     };
@@ -193,6 +237,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             }
             for (m = 0; m < e.vSteps; m++) e.measurements.push(Math.ceil(e.maxValue / e.vSteps * (m + 1)));
             e.measurements.reverse();
+            console.log("measurement-length", e.measurements.length / e.vSteps);
             for (p = document.getElementsByClassName(w); 0 < p.length;) p[0].remove();
             e.polygon = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
             e.polygon.setAttribute("points", e.points);
@@ -352,7 +397,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             var l = setInterval(function () {
                 "Loaded" === n && (n = "busy", La());
                 "Ping" === n && (n = "busy", d.showStatus("Milliseconds"));
-                "Download" === n && (d.showStatus("Initializing.."), M.reset(), x = Z = 0, d.reset(), ra = window.performance.now(), t(), n = "initDown");
+                "Download" === n && (prepareGauge(), d.showStatus("Initializing.."), M.reset(), x = Z = 0, d.reset(), ra = window.performance.now(), t(), n = "initDown");
                 if ("Downloading" === n) {
                     d.Symbol(0);
                     if (0 == T) {
@@ -392,6 +437,23 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 "SendR" === n && (d.showStatus("Test again?"), h = document.createElement("div"), h.innerHTML = '<a xlink:href="https://netmesh.pregi.net/web/speedtest/list" style="cursor: pointer" target="_blank"></a>',
                     u = h.querySelector("a"), d.oDoLiveSpeed.el.textContent = "Finish", A = document.getElementById("oDoLiveSpeed"), u.innerHTML = A.innerHTML, A.innerHTML = h.innerHTML, location.hostname != L.toLowerCase() + Y ? (U = ".", U = encodeURI(U), h = document.getElementById("resultsData"), h.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", U), saveData && qa(5)) : qa(3), n = "busy", clearInterval(l), notify())
             }, 100)
+        }
+
+        async function prepareGauge() {
+            var animations = document.getElementsByClassName("gauge-preparing");
+
+            const sda = document.querySelector('animate.gauge-preparing[attributeName="stroke-dasharray"]');
+            sda.setAttribute('to', `${getArcLength(200)}, ${getArcLength(300)}`);
+
+            for (var anim of animations) {
+                anim.beginElement();
+            }
+
+            return new Promise((resolve, reject) => {
+                sda.addEventListener('endEvent', function () {
+                    resolve()
+                });
+            });
         }
 
         function notify() {
@@ -441,10 +503,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 O += u;
                 l = h.loaded
             };
-            y[b].onload = function (h) {
+            y[b].onload = async function (h) {
                 0 === l && (O += h.total);
                 "initDown" ==
-                    n && (n = "Downloading");
+                    n && (await prepareGauge(), 
+                n = "Downloading");
                 y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
                 0 === G && p(b)
             };
@@ -719,5 +782,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     };
     bb.Start = function () {
         new ib
+    }
+
+    function getArcLength(length) {
+        console.log(length * Math.PI);
+        return length * Math.PI;
     }
 })(window.OpenSpeedTest = window.OpenSpeedTest || {});
