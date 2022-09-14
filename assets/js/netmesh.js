@@ -161,6 +161,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     };
     r.prototype.ShowAppIntro = function () {
         this.OpenSpeedtest.fade("in", 1E3)
+        // this.UI_Desk.fade("in", 1E3);
     };
     r.prototype.userInterface = function () {
         // ANIM 1. user pressed start
@@ -178,45 +179,47 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         // this.intro_Mob.fade("out",
         //     1E3, this.ShowUI())
     };
-    r.prototype.ShowUI = function () {
-        this.UI_Desk.fade("in", 1E3);
-        this.UI_Mob.fade("in", 1E3, function (a) {
-            // ANIM 2. 
-            var animations = document.getElementsByClassName("gauge-starting");
-            for (var anim of animations) {
-                if (anim.id == "gauge-starting-rotate-anim") {
-                    const s = document.getElementById("gauge");
-                    const w = window.getComputedStyle(s, null);
-                    const t = w.getPropertyValue("transform");
-
-                    var values = t.split("(")[1];
-                    values = values.split(")")[0];
-                    values = values.split(",");
-                    var a = values[0];
-                    var b = values[1];
-                    var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-
-                    console.log(angle);
-                    anim.setAttribute(
-                        "from",
-                        `${angle >= 150 ? angle : angle + 360},158,158`
-                    );
-                    console.log(
-                        ((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
-                    );
-                    anim.setAttribute(
-                        "dur",
-                        `${((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
-                        }ms`
-                    );
-                }
-                anim.beginElement();
-            }
-            document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', function () {
-                n = "Loaded";
-            });
+    r.prototype.readyGauge = function() {
+        this.UI_Desk.fade("in", 500);
+        this.UI_Mob.fade("in", 500, function (a) {
+            
             console.log("Developed by Vishnu. Email --\x3e me@vishnu.pro")
-        })
+        });
+    }
+    r.prototype.ShowUI = function () {
+        var animations = document.getElementsByClassName("gauge-starting");
+        for (var anim of animations) {
+            if (anim.id == "gauge-starting-rotate-anim") {
+                const s = document.getElementById("gauge");
+                const w = window.getComputedStyle(s, null);
+                const t = w.getPropertyValue("transform");
+
+                var values = t.split("(")[1];
+                values = values.split(")")[0];
+                values = values.split(",");
+                var a = values[0];
+                var b = values[1];
+                var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
+
+                console.log(angle);
+                anim.setAttribute(
+                    "from",
+                    `${angle >= 150 ? angle : angle + 360},158,158`
+                );
+                console.log(
+                    ((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                );
+                anim.setAttribute(
+                    "dur",
+                    `${((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                    }ms`
+                );
+            }
+            anim.beginElement();
+        }
+        document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', () => {
+            n = "Loaded";
+        });
     };
     r.prototype.Symbol = function (a) {
         0 == a && (this.downSymbolMob.el.style.display = "block", this.downSymbolDesk.el.style.display = "block", this.upSymbolMob.el.style.display = "none", this.upSymbolDesk.el.style.display = "none");
@@ -394,6 +397,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 "web" !== openChannel || qa(1);
             d.startButtonDesk.el.removeEventListener("click", f);
             d.startButtonMob.el.removeEventListener("click", f);
+            const f2BlurElement = document.querySelector("#f2 feGaussianBlur");
+            console.log(f2BlurElement);
             var l = setInterval(function () {
                 "Loaded" === n && (n = "busy", La());
                 "Ping" === n && (n = "busy", d.showStatus("Milliseconds"));
@@ -412,13 +417,15 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     sa = (window.performance.now() - ra) / 1E3;
                     m("dl");
                     d.showStatus("Mbps download");
+                    const blurAmount = Math.min(x ** (2/5), 15);
+                    f2BlurElement.setStdDeviation(blurAmount, blurAmount);
                     d.mainGaugeProgress(x);
                     d.LiveSpeed(x);
                     d.Graph(x, 0);
                     N = M.AvgSpeed(x, ta, dlDuration);
                     sa >= dlDuration && "done" == Ha && (B ? (d.GaugeProgresstoZero(x, "SendR"), d.showStatus("All done"), d.Symbol(2)) : d.GaugeProgresstoZero(x, "Upload"), d.downloadResult(N), aa = O, G = 1, n = "busy", x = Z = 0, M.reset())
                 }
-                "Upload" == n && 1 === G && (d.Symbol(1), n = "initup", d.showStatus("Initializing.."), ua = M.uRandom(ulDataSize, b), B && (T = 1));
+                "Upload" == n && 1 === G && (f2BlurElement.setStdDeviation(0, 0), d.Symbol(1), n = "initup", d.showStatus("Initializing.."), ua = M.uRandom(ulDataSize, b), B && (T = 1));
                 "Uploading" ===
                     n && (1 == T && (T = 2, d.showStatus("Testing upload speed.."), x = 0, M.reset(), d.reset(), Na = h = (window.performance.now() - pa) / 1E3, d.progress(!1, ulDuration + 2.5), ulDuration += h), d.showStatus("Mbps upload"), P = (window.performance.now() - pa) / 1E3, m("up"), d.mainGaugeProgress(x), d.LiveSpeed(x), d.Graph(x, 1), Q = M.AvgSpeed(x, va, ulDuration), P >= ulDuration && 1 == G && (ba = J, d.uploadResult(Q), d.GaugeProgresstoZero(x, "SendR"), ua = void 0, d.showStatus("All done"), d.Symbol(2), n = "busy", G = 0));
                 if ("Error" === n) {
@@ -450,8 +457,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             }
 
             return new Promise((resolve, reject) => {
-                sda.addEventListener('endEvent', function () {
-                    resolve()
+                sda.addEventListener('endEvent', () => {
+                    d.readyGauge();
+                    resolve();
                 });
             });
         }
