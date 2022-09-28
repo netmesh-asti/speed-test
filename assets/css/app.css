@@ -39,8 +39,181 @@ body {
   height: 100vh;
   width: 100vw;
   display: none;
+  overflow: auto;
+  /* background-image: url('../images/netmesh-web-measuring.jpg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center; */
+}
+
+.speedtestApp {
+  height: 100vh;
+  max-height: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 225px;
+  min-height: 400px;
+  font-family: Ubuntu;
+}
+
+.text-one-line-only {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 1080px;
+  display: -webkit-box;
+  -webkit-line-clamp: 1; /* number of lines to show */
+          line-clamp: 1;
+  -webkit-box-orient: vertical;
+}
+
+.circle-icon {
+  width: 20px;
+  height: 20px;
+  border: 1px solid black;
+  padding: 4px;
+  margin-bottom: 4px;
+  border-radius: 50%;
+}
+
+.measuring-screen {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  max-height: 100%;
+}
+
+.speed-connection-progress-panel-container {
+  flex: 1;
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+}
+
+.speed-connection-progress-panel {
+  padding: 16px;
+  display: flex;
+  width: calc(100vw - 32px);
+  align-items: center;
+  max-width: 320px;
+}
+.speed-connection-progress-panel .bar {
+  flex: 1;
+  border-top: 1px solid red;
+  margin-bottom: 3px;
+}
+
+.network-connection-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: end;
+  /* background: #eee; */
+}
+.network-connection-title {
+  font-size: 28px;
+  text-align: center;
+}
+.network-connection-subtitle {
+  font-size: 18px;
+}
+
+
+.main-gauge-panel {
+  flex: 3;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  /* background: #8ee; */
   overflow: hidden;
 }
+
+.test-server-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: start;
+  /* background: #e8e; */
+}
+.test-server-title {
+  font-size: 28px;
+  text-align: center;
+}
+.test-server-subtitle {
+  font-size: 18px;
+}
+.change-test-server-button {
+  font-family: Ubuntu;
+  font-weight: bold;
+  font-size: 16px;
+  background: grey;
+  border: 0px;
+  padding: 4px 12px;
+  border-radius: 18px;
+  margin-top: 4px;
+}
+.change-test-server-button:hover {
+  background: rgba(128, 128, 128, 0.8);
+  cursor: pointer;
+}
+
+@keyframes zoom-out-slightly-down {
+  from {
+    scale: 1;
+    translate: none;
+    opacity: 1;
+  }
+  to {
+    scale: 0.8;
+    translate: 0 20%;
+    opacity: 0;
+  }
+}
+.zoom-out-slightly-down {
+  animation: zoom-out-slightly-down 0.2s ease-out forwards;
+}
+
+@keyframes zoom-out-slightly-up {
+  from {
+    scale: 1;
+    translate: none;
+    opacity: 1;
+  }
+  to {
+    scale: 0.8;
+    translate: 0 -20%;
+    opacity: 0;
+  }
+}
+.zoom-out-slightly-up {
+  animation: zoom-out-slightly-up 0.2s ease-out forwards;
+}
+
+@media screen and (max-height: 599px) {
+  .network-connection-icon {
+    width: 16px;
+    height: 16px;
+    padding: 2px;
+    margin-bottom: 2px;
+  }
+  .network-connection-title {
+    font-size: 20px;
+  }
+  .network-connection-subtitle {
+    font-size: 14px;
+  }
+  .test-server-title {
+    font-size: 20px;
+  }
+  .test-server-subtitle {
+    font-size: 14px;
+  }
+}
+
 .main-Gaugebg {
   fill: none;
   stroke: rgb(231, 231, 232);
@@ -54,8 +227,6 @@ body {
   stroke: url(#gradient);
   stroke-linecap: flat;
   stroke-linejoin: flat;
-  stroke-width: 22px;
-  stroke-dasharray: 681;
   stroke-opacity: 0;
 }
 .main-GaugeWhite {
@@ -69,13 +240,13 @@ body {
   stroke-opacity: 0;
 }
 .oDo-Meter {
-  font-size: 16.633283615112305px;
+  font-size: 16px;
   fill: gray;
   font-family: Ubuntu-Medium, Ubuntu;
   font-weight: 500;
 }
 .oDoLive-Speed {
-  font-size: 28px;
+  font-size: 40px;
   fill: #201e1e;
   font-family: Ubuntu-Medium, Ubuntu;
   font-weight: 500;
@@ -83,10 +254,10 @@ body {
 }
 
 .oDoLive-Status {
-  font-size: 10px;
+  font-size: 18px;
   fill: #d2d1d2;
   font-family: Ubuntu-Medium, Ubuntu;
-  font-weight: 500;
+  font-weight: 400;
   text-anchor: middle;
 }
 .uiBg {
@@ -141,10 +312,10 @@ body {
   pointer-events: visible;
 }
 .buttonTxt {
-  font-size: 32px;
-  fill: #ffffff;
+  font-size: 36px;
+  fill: url(#RadialGradient1);
   font-family: Ubuntu-Medium, Ubuntu;
-  font-weight: 500;
+  font-weight: 600;
   text-anchor: middle;
 }
 
@@ -196,7 +367,7 @@ body {
   stroke: url(#gradient);
 }
 #UI-Desk {
-  display: none;
+  display: block;
 }
 #UI-Mob {
   display: none;
@@ -245,8 +416,8 @@ body {
 .spinner {
   position: absolute;
   z-index: 999;
-  top: 50vh;
-  left: 50vw;
+  top: calc(50vh - 10px);
+  left: calc(50vw - 40px);
   text-align: center;
 }
 

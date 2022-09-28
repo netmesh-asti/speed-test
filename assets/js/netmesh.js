@@ -103,30 +103,50 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.graphMob2 = g("graphMob2");
             this.graphMob1 = g("graphMob1");
             this.text = g("text");
-            this.scale = [{
-                degree: 680,
-                value: 0
-            }, {
-                degree: 570,
-                value: .5
-            },
-            {
-                degree: 460,
-                value: 1
-            }, {
-                degree: 337,
-                value: 10
-            }, {
-                degree: 220,
-                value: 100
-            }, {
-                degree: 115,
-                value: 500
-            }, {
-                degree: 0,
-                value: 1E3
+            this.kalahatingBuka = 52;
+            this.gaugeRadius = 120;
+            this.getScaleDegree = function (scaleNumber, scaleCount) {
+                return (3.1416 * this.gaugeRadius * 2 * (1 - (this.kalahatingBuka / 180))) * (1 - (scaleNumber / scaleCount))
             }
+            this.scale = [
+                {
+                    degree: this.getScaleDegree(0, 8),
+                    value: 0
+                },
+                {
+                    degree: this.getScaleDegree(1, 8),
+                    value: 5
+                },
+                {
+                    degree: this.getScaleDegree(2, 8),
+                    value: 15
+                },
+                {
+                    degree: this.getScaleDegree(3, 8),
+                    value: 30
+                },
+                {
+                    degree: this.getScaleDegree(4, 8),
+                    value: 50
+                },
+                {
+                    degree: this.getScaleDegree(5, 8),
+                    value: 100
+                },
+                {
+                    degree: this.getScaleDegree(6, 8),
+                    value: 300
+                },
+                {
+                    degree: this.getScaleDegree(7, 8),
+                    value: 500
+                },
+                {
+                    degree: this.getScaleDegree(8, 8),
+                    value: 1E3
+                }
             ];
+            console.log( this.scale);
             this.polygon = this.chart = this.element = "";
             this.width = 200;
             this.height = 50;
@@ -169,11 +189,20 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         var animations = document.getElementsByClassName("gauge-connecting");
 
         const sda = document.querySelector('animate.gauge-connecting[attributeName="stroke-dasharray"]');
-        sda.setAttribute('to', `${getArcLength(80)}, ${getArcLength(120)}`);
+        const ra = document.querySelector('animate.gauge-connecting[attributeName="r"]');;
+        const r = parseFloat(ra.getAttribute('to'));
+        sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52/180)))}, ${getArcLength(r * 2)}`);
 
         for (var anim of animations) {
             anim.beginElement();
         }
+
+        const networkConnectionPanel = document.getElementById('networkConnectionPanel');
+        networkConnectionPanel.classList.add('zoom-out-slightly-down');
+
+        const testServerPanel = document.getElementById('testServerPanel');
+        testServerPanel.classList.add('zoom-out-slightly-up');
+
         this.ShowUI();
         // this.intro_Desk.fade("out", 1E3);
         // this.intro_Mob.fade("out",
@@ -187,6 +216,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         });
     }
     r.prototype.ShowUI = function () {
+        const mainGauge = document.getElementById('gauge');
+        const totalGaugeRadius = parseFloat(mainGauge.getAttribute('cx'));
+        const gaugeStrokeWidth = parseFloat(mainGauge.getAttribute('stroke-width'));
+        const actualGaugeRadius = totalGaugeRadius + gaugeStrokeWidth / 2;
+
         var animations = document.getElementsByClassName("gauge-starting");
         for (var anim of animations) {
             if (anim.id == "gauge-starting-rotate-anim") {
@@ -204,14 +238,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 console.log(angle);
                 anim.setAttribute(
                     "from",
-                    `${angle >= 150 ? angle : angle + 360},158,158`
-                );
-                console.log(
-                    ((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                    `${angle >= 142 ? angle : angle + 360},158,158`
                 );
                 anim.setAttribute(
                     "dur",
-                    `${((angle >= 150 ? 510 - angle : 510 - angle - 360) / 360) * 750
+                    `${((angle >= 142 ? 502 - angle : 502 - angle - 360) / 360) * 750
                     }ms`
                 );
             }
@@ -276,12 +307,45 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     };
     r.prototype.mainGaugeProgress = function (a) {
         var c = a;
-        0 > c && (c = 0);
+        // 0 > c && (c = 0);
+        // var f = this.getNonlinearDegree(c);
+        // 0 < a && (this.mainGaugeBlue_Desk.el.style.strokeOpacity =
+        //     1, this.mainGaugeWhite_Desk.el.style.strokeOpacity = 1, this.mainGaugeBlue_Mob.el.style.strokeOpacity = 1, this.mainGaugeWhite_Mob.el.style.strokeOpacity = 1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = f, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1, this.mainGaugeBlue_Mob.el.style.strokeDashoffset = f, this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1);
+        // 0 == f && 1E3 < c ? (this.mainGaugeBlue_Mob.el.style.strokeDashoffset = 681 <= f ? 681 : f, this.mainGaugeWhite_Mob.el.style.strokeDashoffset =
+        //     0 == f ? 1 : f + 1, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = 681 <= f ? 681 : f) : 0 == f && 0 >= c && (this.mainGaugeBlue_Mob.el.style.strokeDashoffset = 681.1, this.mainGaugeWhite_Mob.el.style.strokeDashoffset = .1, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = 681.1)
+        if (c < 0) {
+            c = 0;
+        }
+
         var f = this.getNonlinearDegree(c);
-        0 < a && (this.mainGaugeBlue_Desk.el.style.strokeOpacity =
-            1, this.mainGaugeWhite_Desk.el.style.strokeOpacity = 1, this.mainGaugeBlue_Mob.el.style.strokeOpacity = 1, this.mainGaugeWhite_Mob.el.style.strokeOpacity = 1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = f, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1, this.mainGaugeBlue_Mob.el.style.strokeDashoffset = f, this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1);
-        0 == f && 1E3 < c ? (this.mainGaugeBlue_Mob.el.style.strokeDashoffset = 681 <= f ? 681 : f, this.mainGaugeWhite_Mob.el.style.strokeDashoffset =
-            0 == f ? 1 : f + 1, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = 681 <= f ? 681 : f) : 0 == f && 0 >= c && (this.mainGaugeBlue_Mob.el.style.strokeDashoffset = 681.1, this.mainGaugeWhite_Mob.el.style.strokeDashoffset = .1, this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1, this.mainGaugeBlue_Desk.el.style.strokeDashoffset = 681.1)
+        var adjustedMaxDegree = this.getScaleDegree(0, 6) - 0.0001;
+        if (a > 0) {
+            this.mainGaugeBlue_Desk.el.style.strokeOpacity = 1;
+            this.mainGaugeWhite_Desk.el.style.strokeOpacity = 1;
+
+            this.mainGaugeBlue_Mob.el.style.strokeOpacity = 1;
+            this.mainGaugeWhite_Mob.el.style.strokeOpacity = 1;
+
+            this.mainGaugeBlue_Desk.el.style.strokeDashoffset = f;
+            this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+
+            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = f;
+            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+        }
+        if (f == 0 && c > 1000) {
+            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree <= f ? adjustedMaxDegree : f;
+            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+
+            this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+            this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree <= f ? adjustedMaxDegree : f;
+        } else if (f == 0 && c <= 0) {
+            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
+            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = .1;
+            
+            this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1;
+            this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
+        }
+
     };
     r.prototype.showStatus = function (a) {
         this.oDoLiveStatus.el.textContent = a
@@ -318,7 +382,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     };
     r.prototype.LiveSpeed = function (a, c) {
         "countDown" === c ? (c = a.toFixed(0), this.oDoLiveSpeed.el.textContent = c) : "speedToZero" === c ? (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent =
-            c, this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 16.9, this.oDoTopSpeed.el.style.fill = "gray") : "Ping" === c ? 1 <= a && 1E4 > a ? this.oDoLiveSpeed.el.textContent = Math.floor(a) : 0 <= a && 1 > a && (this.oDoLiveSpeed.el.textContent = a) : (0 == a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1 >= a && 0 < a && (c = a.toFixed(3), this.oDoLiveSpeed.el.textContent = c), 1 < a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1E3 >= a && (this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize =
+            c, this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 17, this.oDoTopSpeed.el.style.fill = "gray") : "Ping" === c ? 1 <= a && 1E4 > a ? this.oDoLiveSpeed.el.textContent = Math.floor(a) : 0 <= a && 1 > a && (this.oDoLiveSpeed.el.textContent = a) : (0 == a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1 >= a && 0 < a && (c = a.toFixed(3), this.oDoLiveSpeed.el.textContent = c), 1 < a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1E3 >= a && (this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize =
                 16.9, this.oDoTopSpeed.el.style.fill = "gray"), 1010 <= a && (this.oDoTopSpeed.el.textContent = 1E3 * Math.floor(a / 1010) + "+", this.oDoTopSpeed.el.style.fill = "#434040", this.oDoTopSpeed.el.style.fontSize = "20px"))
     };
     r.prototype.GaugeProgresstoZero = function (a, c) {
@@ -396,7 +460,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             "widget" !== openChannel &&
                 "web" !== openChannel || qa(1);
             d.startButtonDesk.el.removeEventListener("click", f);
-            d.startButtonMob.el.removeEventListener("click", f);
+            // d.startButtonMob.el.removeEventListener("click", f);
             const f2BlurElement = document.querySelector("#f2 feGaussianBlur");
             console.log(f2BlurElement);
             var l = setInterval(function () {
@@ -450,7 +514,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             var animations = document.getElementsByClassName("gauge-preparing");
 
             const sda = document.querySelector('animate.gauge-preparing[attributeName="stroke-dasharray"]');
-            sda.setAttribute('to', `${getArcLength(200)}, ${getArcLength(300)}`);
+            const ra = document.querySelector('animate.gauge-preparing[attributeName="r"]')
+            console.log(ra);
+            const r = parseFloat(ra.getAttribute('to'));
+
+            sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52/180)))}, ${getArcLength(r * 2)}`);
 
             for (var anim of animations) {
                 anim.beginElement();
@@ -514,8 +582,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             y[b].onload = async function (h) {
                 0 === l && (O += h.total);
                 "initDown" ==
-                    n && (await prepareGauge(), 
-                n = "Downloading");
+                    n && (n = "Downloading");
                 y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
                 0 === G && p(b)
             };
@@ -731,15 +798,15 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             d.showStatus("Automatic Test Starts in ...");
             var cb = setInterval(a, 1E3)
         }
-        d.settingsMob.el.addEventListener("click", c);
-        d.settingsDesk.el.addEventListener("click",
-            c);
+        // d.settingsMob.el.addEventListener("click", c);
+        // d.settingsDesk.el.addEventListener("click",
+        //     c);
         var L = "OpenSpeedTest",
             Y = ".com",
             Oa = "NetMesh" + "\u2122",
             Ka;
         d.startButtonDesk.el.addEventListener("click", f);
-        d.startButtonMob.el.addEventListener("click", f);
+        // d.startButtonMob.el.addEventListener("click", f);
         var db = L.indexOf("S"),
             oa = 0;
         "web" === openChannel && (oa = webRe);
