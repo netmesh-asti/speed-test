@@ -611,6 +611,14 @@ body {
   display: none;
 }
 
+.empty-background {
+  z-index: -1;
+  position: absolute;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--surface-color);
+}
+
 .spinner {
   position: absolute;
   z-index: 999;

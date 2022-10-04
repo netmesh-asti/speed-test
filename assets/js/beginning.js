@@ -19,6 +19,12 @@
   const startButton = document.getElementById('startButtonDesk');
   const buttonToGaugeGroup = document.getElementById('button-to-gauge-group');
   
+  startButton.onfocus = function (e) {
+    startButton.onmouseenter(e);
+  }
+  startButton.onblur = function (e) {
+    startButton.onmouseleave(e);
+  }
   startButton.onmouseenter = function () {
     buttonToGaugeGroup.classList.add('hover');
   }

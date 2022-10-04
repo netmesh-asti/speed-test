@@ -53,7 +53,7 @@
 
     // Add or Remove Server --> Automatically choose the one with least latency
     var openSpeedTestServerList = [
-      {"ServerName":"Home", "Download":"/downloading", "Upload":"/upload", "ServerIcon":"DefaultIcon"}
+      {"ServerName":"Home", "Download":"downloading", "Upload":"upload", "ServerIcon":"DefaultIcon"}
     ];
         
     // Send pings 'pingSamples' times to each Server URL.
@@ -151,6 +151,9 @@
     <div class="bounce2"></div>
     <div class="bounce3"></div>
   </div> -->
+  <div id="empty-background" class="empty-background">
+
+  </div>
   <div id="OpenSpeedtest" class="openSpeedtestApp">
     <div class="speedtestApp">
       <div id="measuringScreenPanel" class="measuring-screen">
@@ -203,7 +206,7 @@
           
         </div>
         <div class="speed-connection-progress-panel-container">
-          <div>
+          <div id="progressBarPanel">
             <div class="speed-connection-progress-panel">
               <svg width="30" height="30">
                 <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
@@ -796,7 +799,7 @@
       <div id="testServerPanel" class="test-server-panel">
         <span class="test-server-title text-one-line-only" title="">(finding a test server...)</span>
         <span class="test-server-subtitle text-one-line-only">---</span>
-        <button type="button" class="change-test-server-button">Change test server</button>
+        <button type="button" class="btn btn-primary" style="margin: 16px;">Change test server</button>
       </div>
     </div>
   </div>
@@ -823,7 +826,7 @@
         </p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary close">Try again</button>
+        <button type="button" id="try-again-button" class="btn btn-primary">Try again</button>
       </div>
     </div>
   </div>

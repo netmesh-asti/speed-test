@@ -201,17 +201,15 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
         console.log("scale", this.scale);
         console.log("gaugeScaleElement", this.gaugeScaleElement.el);
-
-        this.ShowAppIntro();
         // this.loader.fade("out", 500, this.ShowAppIntro())
     };
     r.prototype.ShowAppIntro = function () {
-        this.OpenSpeedtest.fade("in", .001)
+        document.getElementById('empty-background').style.display = 'none';
+        this.OpenSpeedtest.el.style.display = 'block';
         // this.UI_Desk.fade("in", 1E3);
     };
     r.prototype.userInterface = async function () {
         // ANIM 1. user pressed start
-
         console.log("start");
 
         try {
@@ -231,6 +229,14 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         } catch {
 
         }
+        
+        const networkConnectionPanel = document.getElementById('networkConnectionPanel');
+        networkConnectionPanel.classList.add('zoom-out-slightly-down');
+
+        const testServerPanel = document.getElementById('testServerPanel');
+        testServerPanel.classList.add('zoom-out-slightly-up');
+
+        const measuringScreenPanel = document.getElementById('measuringScreenPanel');
 
         var animations = document.getElementsByClassName("gauge-connecting");
 
@@ -253,16 +259,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             anim.beginElement();
         }
 
-        const networkConnectionPanel = document.getElementById('networkConnectionPanel');
-        networkConnectionPanel.classList.add('zoom-out-slightly-down');
-
-        const testServerPanel = document.getElementById('testServerPanel');
-        testServerPanel.classList.add('zoom-out-slightly-up');
-
-        const measuringScreenPanel = document.getElementById('measuringScreenPanel');
-        measuringScreenPanel.style.visibility = 'visible';
-        measuringScreenPanel.classList.add('fade-in');
-
         const downloadSpeedGraph = this.graphc1.el;
         downloadSpeedGraph.setAttribute('viewBox', `0,0,${dlEstimatedMeasurementCount}, 50`);
 
@@ -271,7 +267,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
         return new Promise((resolve) => {
             setTimeout(() => {
+                measuringScreenPanel.style.visibility = 'visible';
+                measuringScreenPanel.classList.add('fade-in');
+
                 n = "Loaded";
+
                 resolve(true);
             }, 300);
         })
@@ -827,6 +827,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             )
         }
 
+        let measurementFunction;
+        let measurementFunctionInterval;
         function e() {
             function b() {
                 pa = window.performance.now();
@@ -837,8 +839,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
             d.startButtonDesk.el.removeEventListener("click", f);
             // d.startButtonMob.el.removeEventListener("click", f);
-            var displaySpeed;
-            var l = setInterval(function () {
+
+            let displaySpeed;
+
+            measurementFunction = function () {
                 "Loaded" === n && (
                     n = "busy",
                     La()
@@ -855,12 +859,14 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     d.reset(),
                     ra = window.performance.now(),
                     t(),
-                    n = "initDown"
+                    n = "initDown",
+                    clearInterval(measurementFunctionInterval)
                 );
                 if ("Downloading" === n) {
                     d.Symbol(0);
                     if (0 == T) {
                         T = 1;
+                        console.log('Testing download speed');
                         d.showStatus("Testing download speed..");
                         var h = (window.performance.now() - ra) / 1E3;
                         Ma = h;
@@ -936,7 +942,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     d.showStatus("Check your network connection status.");
                     d.ConnectionError();
                     n = "busy";
-                    clearInterval(l);
+                    clearInterval(measurementFunctionInterval);
                     h = document.createElement("div");
                     h.innerHTML = '<a xlink:href="https://openspeedtest.com/FAQ.php?ref=NetworkError" style="cursor: pointer" target="_blank"></a>';
                     var u = h.querySelector("a");
@@ -960,12 +966,13 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                         // h.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", U),
                         saveData && qa(5)) : qa(3),
                     n = "busy",
-
+    
                     notify(),
-
-                    clearInterval(l)
+                    clearInterval(measurementFunctionInterval)
                 )
-            }, 100)
+            };
+
+            measurementFunctionInterval = setInterval(measurementFunction, 100);
         }
 
         async function prepareGauge() {
@@ -991,7 +998,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
         function finishGauge() {
             console.log("wala na finish na");
-            var animations = document.getElementsByClassName("gauge-done");
+
+            const progressBarPanel = document.getElementById('progressBarPanel');
+            progressBarPanel.classList.add('fade-out')
+
+            const animations = document.getElementsByClassName("gauge-done");
 
             const ra = document.querySelector('animate.gauge-done[attributeName="r"]');
             const r = parseFloat(ra.getAttribute('to'));
@@ -999,7 +1010,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             const sda = document.querySelector('animate.gauge-done[attributeName="stroke-dasharray"]');
             sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52 / 180)))}, ${getArcLength(r * 2)}`);
 
-            for (var anim of animations) {
+            for (const anim of animations) {
                 anim.beginElement();
             }
         }
@@ -1017,6 +1028,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
             await d.ShowUI();
             await prepareGauge();
+            measurementFunctionInterval = setInterval(measurementFunction, 100);
         }
 
         function w() {
@@ -1066,7 +1078,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             y[b].onerror = function (h) {
                 0 === G && p(b)
             };
-            y[b].onprogress = async function (h) {
+            y[b].onprogress = function (h) {
                 if (1 === G) return y[b].abort(), y[b] = null, y[b] = void 0, delete y[b], !1;
                 "initDown" == n && (n = "Downloading");
                 var u = 0 >= h.loaded ? 0 : h.loaded - l;
@@ -1081,7 +1093,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         function z(b) {
             var l = 0;
             v[b] = new XMLHttpRequest;
-            console.log("ano upload", Aa.Download + "?n=" + Math.random());
+            console.log("ano upload", Aa.Upload + "?n=" + Math.random());
             v[b].open("POST", Aa.Upload + "?n=" + Math.random(), !0);
             v[b].upload.onprogress = function (h) {
                 "initup" == n && void 0 === u && (n = "Uploading");
@@ -1096,7 +1108,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 if ("initup" == n && void 0 === h) {
                     var h;
                     n = "Uploading";
-                    console.log("uploading...");
                 }
                 v[b] && (v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b]);
                 1 === G && z(b);
@@ -1146,9 +1157,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             function u() {
                 var I = new XMLHttpRequest;
                 "Stop" != ha && I.abort();
-                console.log("ano ping", b[pingFile] + "?n=" + Math.random());
-                // const element = document.querySelector('.gauge-pinging[attributeName="stop-color"]')
-                // element.beginElement();
 
                 d.pingProgressBarElement.style.width = `${H.length / pingSamples * 100}%`;
 
@@ -1171,6 +1179,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     404 === this.status && 4 === this.readyState && (A++, h())
                 };
                 I.onerror = function (K) {
+                    console.log(K);
                     A++;
                     h()
                 };
@@ -1287,16 +1296,20 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         var T = 0;
         if ("undefined" !== typeof Ga && !1 === B) {
             // Automatic start test
+            d.OpenSpeedtest.fade("in", 500);
+
             d.userInterface();
             var X = Math.ceil(Math.abs(Ga));
             d.showStatus("");
             var cb = setInterval(a, 1E3)
         }
         else {
-            console.log("hindi automatc");
+            // non-auto start
 
             setClientConnection();
             setTestServerConnection();
+
+            d.ShowAppIntro();
         }
         // d.settingsMob.el.addEventListener("click", c);
         // d.settingsDesk.el.addEventListener("click",
@@ -1341,7 +1354,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     h = "//openspeedtest.com/connect.php";
                 1 == b && (h = webIP);
                 5 == b && (h = saveDataURL);
-                console.log("ano save", h);
                 l.open("POST", h, !0);
                 l.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 l.onreadystatechange = function () {

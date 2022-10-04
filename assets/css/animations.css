@@ -41,6 +41,9 @@
 .fade-in {
   animation: fade 0.2s ease-out forwards;
 }
+.fade-out {
+  animation: fade 0.2s ease-out reverse forwards;
+}
 
 @keyframes button-to-gauge-remove-filter {
   from {

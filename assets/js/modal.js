@@ -20,7 +20,11 @@ modals.forEach(modal => {
       modal.style.display = "none";
     }
   })
-})
+});
+
+document.getElementById('try-again-button').onclick = function () {
+  window.location.reload();
+}
 
 // When the user clicks anywhere outside of the modal, close it
 // window.onclick = function(event) {
