@@ -217,8 +217,15 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         try {
             window.flutter_inappwebview.callHandler('setSpeedTestData')
                 .then(function (data) {
+                    // data = {
+                    //     testServerName,
+                    //     networkConnectionName
+                    // }
                     document.querySelectorAll('.test-server-title').forEach(element => {
                         element.textContent = data.testServerName;
+                    });
+                    document.querySelectorAll('.network-connection-title').forEach(element => {
+                        element.textContent = data.networkConnectionName;
                     });
                 })
         } catch {

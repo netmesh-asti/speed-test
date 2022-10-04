@@ -237,7 +237,7 @@ body {
 .speed-results-panel {
   display: flex;
   justify-content: center;
-  width: clamp(220px, 120vw, 400px);
+  width: clamp(220px, 1600vw, 460px);
 }
 .speed-results-column {
   margin:  clamp(6px, 1vh, 1vh);
