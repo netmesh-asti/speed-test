@@ -1,22 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<html>
+<html class="light-theme">
 <head>
   <title>NetMesh Web Speedtest</title>
+
   <meta name="description"
     content="NetMesh Web Speedtest™️" />
+
+  <link href="/assets/css/animations.css" rel="stylesheet" type="text/css" />
   <link href="/assets/css/app.css" rel="stylesheet" type="text/css" />
-  <script> window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches&&(document.head.innerHTML+='<link id="darkmode" rel="stylesheet" href="/assets/css/darkmode.css" type="text/css"/>');function getCookieValue(b,a){return(a=document.cookie.match("(^|;)\\s*"+b+"\\s*=\\s*([^;]+)"))?a.pop():""}if("light"===getCookieValue("mode")){var darkStyle=document.getElementById("darkmode");darkStyle&&darkStyle.parentNode.removeChild(darkStyle)}; </script>
+  <link href="/assets/css/modal.css" rel="stylesheet" type="text/css" />
+
+  <!-- <script> window.matchMedia&&window.matchMedia("(prefers-color-scheme: light)").matches&&(document.head.innerHTML+='<link id="darkmode" rel="stylesheet" href="/assets/css/darkmode.css" type="text/css"/>');function getCookieValue(b,a){return(a=document.cookie.match("(^|;)\\s*"+b+"\\s*=\\s*([^;]+)"))?a.pop():""}if("light"===getCookieValue("mode")){var darkStyle=document.getElementById("darkmode");darkStyle&&darkStyle.parentNode.removeChild(darkStyle)}; </script> -->
+  
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta property="og:image" content="/assets/images/img.png" />
+
   <link rel="apple-touch-icon" sizes="180x180" href="/assets/images/icons/app-icon/apple-touch-icon.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/assets/images/icons/app-icon/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/assets/images/icons/app-icon/favicon-16x16.png">
   <link rel="manifest" href="/assets/images/icons/app-icon/site.webmanifest">
   <link rel="mask-icon" href="/assets/images/icons/app-icon/safari-pinned-tab.svg" color="#5bbad5">
   <link rel="shortcut icon" href="/assets/images/icons/app-icon/favicon.ico">
+ 
   <meta name="msapplication-TileColor" content="#ffc40d">
   <meta name="msapplication-config" content="/assets/images/icons/app-icon/browserconfig.xml">
   <meta name="theme-color" content="#ffffff">
@@ -57,7 +65,7 @@
     // If Server not responded within 5 Seconds for any requests we send ('pingSamples' times)
     // We will show Network Error, you can change the limit here.
     // In milliseconds, if you need to set 6 seconds. Change value to 6000.
-    var pingTimeOut = 5000; 
+    var pingTimeOut = 2000; 
 
     // Set a PingTimeout dynamically by passing "Out" or "O" as a URL Parameter    
     var setPingTimeout = true;
@@ -87,6 +95,8 @@
     var dlDuration = 12;
     var ulDuration = 12;
 
+    var dlEstimatedMeasurementCount = (dlDuration + 2.5) * 10 + 2;
+    var ulEstimatedMeasurementCount = (ulDuration) * 10 + 2;
     // 6 is the common limit found on most browser.
     // Choose  Number for parallel http connections to Server | Default is 6 
     var dlThreads = 6;
@@ -121,7 +131,7 @@
 
     function ostOnload() {
       // Execute something when everything ready. 
-      console.log("OpenSpeedtest.com V2.5.2 Loaded!")
+      console.log("OpenSpeedtest.com V2.5.2 Loaded!");
     }
   
     var openChannel = "dev";
@@ -136,98 +146,161 @@
     If you like to make any other modification to this application or need a different license for your organization 
     please contact support@openspeedtest.com
   -->
-  <div id="loading_app" class="spinner">
+  <!-- <div id="loading_app" class="spinner">
     <div class="bounce1"></div>
     <div class="bounce2"></div>
     <div class="bounce3"></div>
-  </div>
+  </div> -->
   <div id="OpenSpeedtest" class="openSpeedtestApp">
     <div class="speedtestApp">
-      <div class="measuring-screen">
-        <div class="speed-connection-progress-panel-container">
-          <div class="speed-connection-progress-panel">
-            <img class="circle-icon client" src="./assets/images/icons/wifi-icon.svg" />
-            <div class="bar"></div>
-            <img class="circle-icon server" src="./assets/images/icons/test-server-icon.svg" />
+      <div id="measuringScreenPanel" class="measuring-screen">
+        <div class="speed-results-panel-container">
+          <div class="speed-results-panel">
+            <div class="speed-results-column">
+              <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
+                <defs>
+                  <symbol id="graphc1" fill="var(--secondary-color)" stroke="var(--secondary-color)" stroke-width="1">
+                    <path class="line" />
+                  </symbol>
+                </defs>
+                <use xlink:href="#graphc1" x="0" y="0" /> 
+              </svg>
+              <div id="downResult" class="speed-value">---</div>
+              <div>
+                <span class="speed-unit">Mbps</span>
+                <span class="speed-label">&nbsp;DOWNLOAD</span>
+              </div>
+              <div class="ping-jitter-container">
+                <span class="speed-response-label">Ping</span>
+                <span id="pingResult" class="ping-jitter-value">---</span>
+                <span class="speed-response-unit">&nbsp;ms</span>
+              </div>
+            </div>
+            <div class="speed-results-column">
+              <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
+                <defs>
+                  <symbol fill="var(--secondary-color)" stroke="var(--secondary-color)" id="graphc2" stroke-width="1">
+                    <!-- d="M 0,50 L 0,25 M 1,50 L 1,33 M 2,50 L 2,0 M 3,50 L 3,39 M 128,50 L 128,49 M 129,50 L 129,18 M 130,50 L 130,0" -->
+                    <path class="line2" d=""/>
+                  </symbol>
+                </defs>
+                <use xlink:href="#graphc2" x="0" y="0">
+                </use>
+              </svg>
+              <div id="upRestxt" class="speed-value">---</div><div>
+                <span class="speed-unit">Mbps</span>
+                <span class="speed-label">&nbsp;UPLOAD</span>
+              </div>
+              <div class="ping-jitter-container">
+                <span class="speed-response-label">Jitter</span>
+                <span id="jitterDesk" class="ping-jitter-value">---</span>
+                <span class="speed-response-unit">&nbsp;ms</span>
+              </div>
+            </div>
           </div>
         </div>
-        <div style="flex: 1;">
-          graph here
+        <div style="flex: 3;">
+          
+        </div>
+        <div class="speed-connection-progress-panel-container">
+          <div>
+            <div class="speed-connection-progress-panel">
+              <svg width="30" height="30">
+                <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
+                <use xlink:href="#wifi-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
+              </svg>
+              <div class="bar"></div>
+              <svg width="30" height="30">
+                <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
+                <use xlink:href="#test-server-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
+              </svg>
+            </div>
+            <div style="position: relative; max-width: 1080px; width: calc(100% - 60px);" >
+              <div id="pingProgressBar" class="ping-progress-bar"></div>
+              <div id="downloadTestProgressBar" class="download-progress-bar"></div>
+              <div id="uploadTestProgressBar" class="upload-progress-bar"></div>
+            </div>
+            <div class="speed-connection-progress-names">
+              <span class="network-connection-title text-one-line-only" title="">
+                ---
+              </span>
+              <span class="test-server-title text-one-line-only" title="">
+                ---
+              </span>
+            </div>
+          </div>
         </div>
       </div>
       <div id="networkConnectionPanel" class="network-connection-panel">
-        <!-- <svg style="max-height: 128px;" viewBox="0 0 416 104">
-          <symbol id="wifiSymbol" viewBox="0 0 122.878 88.858" enable-background="new 0 0 122.878 88.858">
-            <g>
-              <path d="M17.215,43.332l10.399,10.57c1.096-1.28,2.282-2.497,3.551-3.642c7.666-6.908,18.284-11.183,30.038-11.183v0.029h0.001h0 v-0.029c11.754,0,22.373,4.275,30.039,11.184c1.416,1.276,2.73,2.644,3.93,4.09l10.489-10.489 c-1.408-1.612-2.919-3.146-4.525-4.594c-10.243-9.233-24.363-14.944-39.932-14.944v-0.029h0h-0.001v0.029 c-15.567,0-29.688,5.711-39.931,14.944C19.843,40.555,18.489,41.913,17.215,43.332L17.215,43.332z M61.656,48.555L61.656,48.555 l0.001,0.028c10.656,0.001,20.332,3.913,27.358,10.237l0.003,0.002l-8.575,8.575l-1.977,1.848 c-4.388-3.666-10.294-5.908-16.81-5.908v0.029h-0.001h-0.001v-0.029c-6.846,0-13.019,2.476-17.464,6.477 c-0.111,0.1-0.221,0.2-0.33,0.302L33.86,59.221c0.145-0.135,0.29-0.268,0.438-0.4C41.324,52.496,51,48.584,61.655,48.583 L61.656,48.555L61.656,48.555L61.656,48.555z M61.933,71.679c4.264,0,8.143,1.648,11.036,4.341L60.5,88.858L49.909,77.021 C52.875,73.74,57.163,71.679,61.933,71.679L61.933,71.679z M10.005,34.716c0.629-0.616,1.272-1.22,1.929-1.813 c12.421-11.195,29.61-18.121,48.619-18.121v0.029h0.001l0,0v-0.029c19.01,0,36.198,6.926,48.619,18.122 c1.122,1.011,2.204,2.058,3.246,3.137l10.458-10.458c-1.226-1.262-2.496-2.487-3.811-3.672 C104.068,8.392,83.378,0.029,60.555,0.029V0l0,0h-0.001v0.029c-22.823,0-43.513,8.363-58.512,21.882 C1.348,22.535,0.668,23.171,0,23.818L10.005,34.716L10.005,34.716z"/>
-            </g>
-          </symbol>
-          <symbol id="iconCircle">
-            <circle r="16" cx="17" cy="17" fill="transparent" stroke="black" stroke-width="1"></circle>
-            <use xlink:href="#wifiSymbol" height="24" width="24" x="5" y="5"/>
-          </symbol>
-          <g>
-            <use xlink:href="#iconCircle" style="translate: calc(50% - 17px) calc(0%);" />
-            <text class="t" style="font-family: Ubuntu; font-size: 28px; translate: calc(50%) calc(34px + 12px);" dominant-baseline="text-before-edge" text-anchor="middle">
-              <title>Hello, World!</title>
-              Smart SmartSmart SmartSmart SmartSmart SmartSmart SmartSmart Smart
-            </text>
-            <text style="font-family: Ubuntu; font-size: 18px; translate: calc(50%) calc(34px + 12px + 28px + 4px);" dominant-baseline="text-before-edge" text-anchor="middle">
-              Converge
-            </text>
-          </g>
-        </svg> -->
-        <img class="circle-icon" src="./assets/images/icons/wifi-icon.svg" />
-        <span class="network-connection-title text-one-line-only" title="Smart Telecommunications of the Globe, Universe and DITO Converge by TM Industries Huawei or Another Philippine Long Distance Company and Everything Everywhere All at Once I'm Drifting On a Lonely Sea Under the Sea Networking Open Minded Ka Ba? Game Na!">
-          Smart Telecommunications of the Globe, Universe and DITO Converge by TM Industries Huawei or Another Philippine Long Distance Company and Everything Everywhere All at Once I'm Drifting On a Lonely Sea Under the Sea Networking Open Minded Ka Ba? Game Na!
+        <svg width="32" height="32">
+          <circle r="15.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
+          <use xlink:href="#wifi-icon" width="20" height="20" x="6" y="6" style="fill: var(--secondary-color);"></use>
+        </svg>
+        <span class="network-connection-title text-one-line-only" title="">
+          ---
         </span>
-        <span class="network-connection-subtitle text-one-line-only">175.176.23.23</span>
+        <span class="client-ip network-connection-subtitle text-one-line-only">---</span>
       </div>
       <div class="main-gauge-panel">
-        <svg id="startButtonDesk" viewBox="0 0 316 316">
-          <!-- <rect width="100%" height="100%" fill="transparent" stroke-width="2" /> -->
+        <svg id="gauge-container" viewBox="0 0 316 316">
+          <animateTransform
+            class="gauge-connecting"
+            begin="indefinite"
+            attributeName="transform"
+            type="translate"
+            dur="500ms"
+            to="0,16"
+            calcMode="spline"
+            keyTimes="0;1"
+            keySplines="0.3 0.3 0.1 1"
+            fill="freeze"
+          />
           <defs>
-             <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#0F5FFF" />
-              <stop offset="100%" stop-color="#2500DB" />
-            </linearGradient>
-            <linearGradient id="gradient-upload" x1="0%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stop-color="#b525f8" />
-              <stop offset="100%" stop-color="#9300DB" />
-            </linearGradient>
-            <radialGradient id="RadialGradient1">
-              <stop offset="0%" stop-color="#0077cc" />
-              <stop offset="100%" stop-color="#0077cc" />
+            <radialGradient id="download-speed-gradient"
+              cx="calc((158 + -0.241921896 * 158) / 316)"
+              cy="calc((158 + -0.970295726 * 158) / 316)"
+              r="1.5">
+              <stop class="max-speed-gradient-stop" offset="5%" stop-color="#1ca561" />
+              <stop offset="25%" stop-color="#1C60A5" />
+              <stop offset="50%" stop-color="#0881E2" />
+              <stop offset="100%" stop-color="#52A0EE" />
+            </radialGradient>
+            <radialGradient id="upload-speed-gradient"
+              cx="calc((158 + -0.241921896 * 158) / 316)"
+              cy="calc((158 + -0.970295726 * 158) / 316)"
+              r="1.5">
+              <stop class="max-speed-gradient-stop" offset="5%" stop-color="#1ca561" />
+              <stop offset="25%" stop-color="#6D4EA1" />
+              <stop offset="50%" stop-color="#855FC7" />
+              <stop offset="100%" stop-color="#AF8DE9" />
             </radialGradient>
 
-            <linearGradient id="start-button-gradient" x1="75%" y1="50%" x2="75%" y2="0%">
-              <stop offset="0%" stop-color="#0F5FFFFF">
-                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color" dur="300ms" to="#0038a8FF" fill="freeze" />
-                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-starting" attributeName="stop-color" dur="200ms" to="#00000033" fill="freeze" />
+            <linearGradient id="start-button-gradient" x1="22%" y1="100%" x2="100%" y2="0%">
+              <stop offset="0%">
+                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color"  dur="300ms" fill="freeze" />
+                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
               </stop>
-              <stop offset="100%" stop-color="#b525f8FF">
-                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color" dur="300ms" to="#0038a800" fill="freeze" />
-                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-starting" attributeName="stop-color" dur="200ms" to="#00000033" fill="freeze" />
+              <stop offset="75%">
+                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color" dur="300ms" fill="freeze" />
+                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
               </stop>
-              <animate begin="indefinite" class="gauge-connecting" attributeName="x2" dur="300ms" to="90%" fill="freeze" />
-              <animate begin="indefinite" class="gauge-connecting" attributeName="y2" dur="300ms" to="33%" fill="freeze" />
             </linearGradient>
 
             <symbol id="mainGaugeBlue">
               <defs>
                 <filter id="f2" x="-0.8" y="-0.1" width="200%" height="200%">
                   <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
-                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="0" />
-                  <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                  <feGaussianBlur result="blurOut" in="offOut" stdDeviation="10" />
+                  <feBlend in="SourceGraphic" in2="blurOut" mode="multiply" />
                 </filter>
               </defs>
-              <!-- <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" filter="url(#f2)">
-              </path> -->
               <circle
+                id="gauge-circle"
                 r="120"
                 cx="158"
                 cy="158"
                 filter="url(#f2)"
+                stroke="url(#download-speed-gradient)"
                 stroke-width="16"
                 stroke-dasharray="calc(3.1416 * 120 * 2 * (1 - (52/180))) calc(3.1416 * 120 * 2)"
                 transform="rotate(142, 158, 158)"
@@ -238,23 +311,17 @@
             <symbol id="mainGaugeWhite" viewBox="0 0 295.93 270.18">
               <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" />
             </symbol>
-        
-            <symbol id="oDoMeter" viewBox="0 0 316 316">
-              <text transform="translate(79.1989 219.5661) scale(1 1)" dominant-baseline="middle" text-anchor="middle">0</text>
-              <text transform="translate(58.5478 168.4528) scale(1 1)" dominant-baseline="middle" text-anchor="middle">5</text>
-              <text transform="translate(68.1206 114.1629) scale(1 1)" dominant-baseline="middle" text-anchor="middle">15</text>
-              <text transform="translate(105.0081 73.1952) scale(1 1)" dominant-baseline="middle" text-anchor="middle">30</text>
-              <text transform="translate(158 58) scale(1 1)" dominant-baseline="middle" text-anchor="middle">50</text>
-              <text transform="translate(206.9919 73.1952) scale(1 1)" dominant-baseline="middle" text-anchor="middle">100</text>
-              <text transform="translate(243.8794 114.1629) scale(1 1)" dominant-baseline="middle" text-anchor="middle">300</text>
-              <text transform="translate(253.4522 168.4528) scale(1 1)" dominant-baseline="middle" text-anchor="middle">500</text>
-              <text id="oDoTopSpeed" class="oDoTop-Speed" transform="translate(240.8011 219.5661) scale(1 1)" dominant-baseline="middle" text-anchor="middle">1000+</text>
 
-              <text id="oDoLiveSpeed" class="oDoLive-Speed" transform="translate(158 158) scale(1 1)">...</text>
-              <text id="oDoLiveStatus" class="oDoLive-Status" transform="translate(158 180) scale(1 1)"></text>
+            <symbol id="oDoMeter" viewBox="0 0 316 316">
+              <g id="gauge-meter-scale">
+              </g>
+              <text id="oDoLiveSpeed" class="oDoLive-Speed" transform="translate(158 148) scale(1 1)" dominant-baseline="middle">
+                ...
+              </text>
+              <text id="oDoLiveStatus" class="oDoLive-Status" transform="translate(158 176) scale(1 1)" dominant-baseline="middle"></text>
             </symbol>
         
-            <symbol id="progressBar" viewBox="0 0 293.53 18.38">
+            <!-- <symbol id="progressBar" viewBox="0 0 293.53 18.38">
               <defs>
                 <symbol id="personLeft" class="uiBg" viewBox="0 0 33.46 30.9">
                   <path            d="M32.7,4.8a7.81,7.81,0,0,1-4.1,2.8,61.42,61.42,0,0,0-5.7,2.3s-.1.3-.4,1.3-.9.6-.9.6v1.8a6.15,6.15,0,0,1,1.2,1.8,14.72,14.72,0,0,0,.8,1.7h.5c.5,0,.7,1.9.8,3.2s-1.1.8-1.1.8v3.2c0,1.9-.5,2.8-2.3,4.8s-4.7,1.8-4.7,1.8-3.1.1-4.7-1.8-2.3-3-2.3-4.8V21.1s-1.2.5-1.1-.8.3-3.2.8-3.2H10s.3-.6.8-1.7A9.62,9.62,0,0,1,12,13.6V11.8s-.8.4-.9-.6a2.26,2.26,0,0,0-.4-1.3A61.42,61.42,0,0,0,5,7.6,7.41,7.41,0,0,1,.9,4.8C.2,3.6,0,0,0,0H33.4A11.7,11.7,0,0,1,32.7,4.8Z" />
@@ -279,133 +346,121 @@
                   <use width="36.8" height="31.6" transform="matrix(0.58, 0, 0, -0.58, 272.2, 18.38)" xlink:href="#doc" />
                 </g>
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="upSymbol" viewBox="0 0 32.21 41.62">
+            <!-- <symbol id="upSymbol" viewBox="0 0 32.21 41.62">
               <g>
                 <path d="M2.71,26H9.55V38.55a2.93,2.93,0,0,0,2.78,3.07h7.13a2.94,2.94,0,0,0,2.78-3.07V26h6.84L15.89,8.8Z" />
                 <rect width="32.21" height="3.41" />
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="downSymbol" viewBox="0 0 32.21 41.62">
+            <!-- <symbol id="downSymbol" viewBox="0 0 32.21 41.62">
               <g>
                 <path
                   d="M29.51,15.62H22.66V3.08A2.94,2.94,0,0,0,19.88,0H12.76A2.94,2.94,0,0,0,10,3.08V15.62H3.14l13.18,17.2Z" />
                 <rect y="38.21" width="32.21" height="3.41" />
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="resultCard" viewBox="0 0 278.13 85.49">
+            <!-- <symbol id="resultCard" viewBox="0 0 278.13 85.49">
               <g>
                 <rect width="278.13" height="85.49" />
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="resultCardMob" viewBox="0 0 88.1 65.79">
+            <!-- <symbol id="resultCardMob" viewBox="0 0 88.1 65.79">
               <g>
                 <rect width="88.1" height="65.79" />
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="downloadRc1" viewBox="0 0 72 16">
+            <!-- <symbol id="downloadRc1" viewBox="0 0 72 16">
               <g>
                 <text transform="translate(0 10.52)" class="rtext">DOWNLOAD</text>
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="uploadRc2" viewBox="0 0 48 16">
+            <!-- <symbol id="uploadRc2" viewBox="0 0 48 16">
               <g>
                 <text transform="translate(0 10.52)" class="rtext">
                   UPLOAD
                 </text>
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="pingSymbol" viewBox="0 0 14.28 14.28">
+            <!-- <symbol id="pingSymbol" viewBox="0 0 14.28 14.28">
               <g>
                 <path
                   d="M13.92.64a.55.55,0,0,0-.65.13L12.06,2A7.21,7.21,0,0,0,9.79.52a7,7,0,0,0-5.42,0,7,7,0,0,0-3.8,3.8,7,7,0,0,0,0,5.54,7.23,7.23,0,0,0,1.52,2.28,7.25,7.25,0,0,0,2.28,1.53,6.89,6.89,0,0,0,2.77.56,7.12,7.12,0,0,0,5.5-2.57.31.31,0,0,0,.07-.21.23.23,0,0,0-.09-.19L11.35,10a.36.36,0,0,0-.24-.09.27.27,0,0,0-.21.11,4.61,4.61,0,0,1-1.67,1.37,4.68,4.68,0,0,1-2.09.48,4.75,4.75,0,0,1-3.36-1.39A4.84,4.84,0,0,1,2.76,9a4.68,4.68,0,0,1-.38-1.85A4.63,4.63,0,0,1,2.76,5.3,4.74,4.74,0,0,1,5.3,2.76a4.72,4.72,0,0,1,5.09.9L9.1,4.94A.54.54,0,0,0,9,5.58.56.56,0,0,0,9.52,6h4.17a.61.61,0,0,0,.42-.17.57.57,0,0,0,.17-.42V1.19a.56.56,0,0,0-.36-.55Z"
                   style="fill: #14b0fe" />
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="pingRc3" viewBox="0 0 28.43 13.85">
+            <!-- <symbol id="pingRc3" viewBox="0 0 28.43 13.85">
               <g>
                 <text transform="translate(0 10.52)" class="rtext">PING</text>
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="jitterRc3" viewBox="0 0 39.95 13.85">
+            <!-- <symbol id="jitterRc3" viewBox="0 0 39.95 13.85">
               <text class="rtext" transform="translate(0 9.64)">JI<tspan class="rtext" x="9.44" y="0">T</tspan>
                 <tspan x="16.36" y="0">TER</tspan>
               </text>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="wifiSymbol" viewBox="0 0 122.878 88.858" enable-background="new 0 0 122.878 88.858">
+            <!-- <symbol id="wifiSymbol" viewBox="0 0 122.878 88.858" enable-background="new 0 0 122.878 88.858">
               <g>
                 <path d="M17.215,43.332l10.399,10.57c1.096-1.28,2.282-2.497,3.551-3.642c7.666-6.908,18.284-11.183,30.038-11.183v0.029h0.001h0 v-0.029c11.754,0,22.373,4.275,30.039,11.184c1.416,1.276,2.73,2.644,3.93,4.09l10.489-10.489 c-1.408-1.612-2.919-3.146-4.525-4.594c-10.243-9.233-24.363-14.944-39.932-14.944v-0.029h0h-0.001v0.029 c-15.567,0-29.688,5.711-39.931,14.944C19.843,40.555,18.489,41.913,17.215,43.332L17.215,43.332z M61.656,48.555L61.656,48.555 l0.001,0.028c10.656,0.001,20.332,3.913,27.358,10.237l0.003,0.002l-8.575,8.575l-1.977,1.848 c-4.388-3.666-10.294-5.908-16.81-5.908v0.029h-0.001h-0.001v-0.029c-6.846,0-13.019,2.476-17.464,6.477 c-0.111,0.1-0.221,0.2-0.33,0.302L33.86,59.221c0.145-0.135,0.29-0.268,0.438-0.4C41.324,52.496,51,48.584,61.655,48.583 L61.656,48.555L61.656,48.555L61.656,48.555z M61.933,71.679c4.264,0,8.143,1.648,11.036,4.341L60.5,88.858L49.909,77.021 C52.875,73.74,57.163,71.679,61.933,71.679L61.933,71.679z M10.005,34.716c0.629-0.616,1.272-1.22,1.929-1.813 c12.421-11.195,29.61-18.121,48.619-18.121v0.029h0.001l0,0v-0.029c19.01,0,36.198,6.926,48.619,18.122 c1.122,1.011,2.204,2.058,3.246,3.137l10.458-10.458c-1.226-1.262-2.496-2.487-3.811-3.672 C104.068,8.392,83.378,0.029,60.555,0.029V0l0,0h-0.001v0.029c-22.823,0-43.513,8.363-58.512,21.882 C1.348,22.535,0.668,23.171,0,23.818L10.005,34.716L10.005,34.716z"/>
               </g>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="downResultC1" viewBox="0 0 53.35 39.8">
+            <!-- <symbol id="downResultC1" viewBox="0 0 53.35 39.8">
               <text id="downResult" transform="translate(0 20.07)" class="rtextnum">---</text>
               <text x="0" y="35" class="rtextmbms">Mbps</text>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="upResultC2" viewBox="0 0 53.35 39.8">
+            <!-- <symbol id="upResultC2" viewBox="0 0 53.35 39.8">
               <text id="upRestxt" transform="translate(0 20.07)" class="rtextnum">---</text>
               <text x="0" y="36.09" class="rtextmbms">Mbps</text>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="pingResultC3" viewBox="0 0 40.01 39.79">
+            <!-- <symbol id="pingResultC3" viewBox="0 0 40.01 39.79">
               <text transform="translate(0 20.07)" id="pingResult" class="rtextnum">--</text>
         
               <text x="0" y="35" class="rtextmbms">ms</text>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="jitterResultC3" viewBox="0 0 21.99 39.79">
+            <!-- <symbol id="jitterResultC3" viewBox="0 0 21.99 39.79">
               <text id="jitterDesk" transform="translate(2.33 20.07)" class="rtextnum">--</text>
               <text x="2" y="35" xml:space="preserve" class="rtextmbms"> ms</text>
-            </symbol>
-        
-            <symbol style="stroke: url(#gradient); fill: none;" id="graphc1" viewBox="0 0 200 100">
-              <polyline
-                points="0,50 0.00,16.91 3.51,43.13 7.03,8.17 10.54,23.80 14.05,49.71 17.57,47.57 21.08,5.73 24.59,18.61 28.11,10.03 31.62,29.77 35.14,42.97 38.65,42.85 42.16,44.34 45.68,8.71 49.19,2.56 52.70,16.48 56.22,1.10 59.73,47.04 63.24,34.75 66.76,48.00 70.27,23.19 73.78,11.62 77.30,15.34 80.81,49.09 84.32,42.92 87.84,42.99 91.35,38.99 94.86,5.15 98.38,47.27 101.89,49.66 105.41,16.49 108.92,29.03 112.43,19.89 115.95,47.80 119.46,48.13 122.97,30.92 126.49,17.38 130.00,9.27 130,50"
-                class="line"></polyline>
-            </symbol>
-        
-            <symbol style="stroke: url(#gradient-upload); fill: none;" id="graphc2" viewBox="0 0 200 100">
-              <polyline
-                points="0,50 0.00,16.91 3.51,43.13 7.03,8.17 10.54,23.80 14.05,49.71 17.57,47.57 21.08,5.73 24.59,18.61 28.11,10.03 31.62,29.77 35.14,42.97 38.65,42.85 42.16,44.34 45.68,8.71 49.19,2.56 52.70,16.48 56.22,1.10 59.73,47.04 63.24,34.75 66.76,48.00 70.27,23.19 73.78,11.62 77.30,15.34 80.81,49.09 84.32,42.92 87.84,42.99 91.35,38.99 94.86,5.15 98.38,47.27 101.89,49.66 105.41,16.49 108.92,29.03 112.43,19.89 115.95,47.80 119.46,48.13 122.97,30.92 126.49,17.38 130.00,9.27 130,50"
-                class="line2"></polyline>
-            </symbol>
-        
+            </symbol> -->
+<!--         
             <symbol id="jitterMob" viewBox="0 0 58.1 35.77">
               <text id="pingMobres" transform="translate(11.07 18.05)" class="rtextnum">--</text>
               <text x="-8" y="33.46" class="rtextmbms">Jitter</text>
               <text id="JitterResultMon" x="17" y="33.46" class="jitter-Mob">--</text>
               <text id="JitterResultms" x="36" y="33.46" class="rtextmbms">ms</text>
         
-            </symbol>
+            </symbol> -->
         
-            <symbol id="settings" viewBox="0 0 100 125">
+            <!-- <symbol id="settings" viewBox="0 0 100 125">
               <rect fill="transparent" x="0" y="25" width="100" height="50" />
               <path d="M36.43,29.64,9.29,50,36.43,70.36v6.78L2.5,56.79V43.21L36.43,22.86Z" />
               <path d="M63.57,70.36,90.71,50,63.57,29.64V22.86L97.5,43.21V56.79L63.57,77.14Z" />
               <circle cx="29.64" cy="50" r="6.79" />
               <circle cx="50" cy="50" r="6.79" />
               <circle cx="70.36" cy="50" r="6.79" />
-            </symbol>
+            </symbol> -->
         
-            <symbol id="playButton" viewBox="0 0 191.255 191.255">
+            <!-- <symbol id="playButton" viewBox="0 0 191.255 191.255">
               <rect width="180" height="90" rx="10" ry="10" class="startButton" />
               <text class="buttonTxt" x="90" y="60">Start</text>
-            </symbol>
+            </symbol> -->
         
-            <symbol id="introProgress" viewBox="0 0 409.31 10.48">
+            <!-- <symbol id="introProgress" viewBox="0 0 409.31 10.48">
               <line x1="5" y1="5" x2="405" y2="5"></line>
-            </symbol>
+            </symbol> -->
         
             <symbol id="ConnectError" viewBox="0 0 489.6 489.6">
               <a target="_blank" href="https://openspeedtest.com/FAQ.php?ref=NetworkError">
@@ -426,9 +481,9 @@
               </a>
             </symbol>
         
-            <symbol class="Your-IP" viewBox="0 0 300 299.12">
+            <!-- <symbol class="Your-IP" viewBox="0 0 300 299.12">
               <text id="YourIP" transform="translate(140 228) scale(.3 1)">Powered by OpenSpeedtest.com!</text>
-            </symbol>
+            </symbol> -->
         
             <symbol id="light" viewBox="0 0 512 512">
               <g>
@@ -482,9 +537,15 @@
           <!-- <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" /> -->
           
           <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" viewBox="0 0 316 316"/>
-          <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" viewBox="0 0 316 316"/>
           <use id="mainGaugeWhite-Desk" class="main-GaugeWhite" xlink:href="#mainGaugeWhite" viewBox="0 0 316 316"/>
-          <use xlink:href="#oDoMeter" class="oDo-Meter" viewBox="0 0 316 316" opacity="0">
+          <use xlink:href="#oDoMeter" class="oDo-Meter" viewBox="0 0 316 316" display="none">
+            <animate
+              class="gauge-preparing"
+              begin="indefinite"
+              attributeName="display"
+              to="block"
+              fill="freeze"
+            />
             <animate
               class="gauge-preparing"
               begin="indefinite"
@@ -496,15 +557,20 @@
               to="1"
               fill="freeze"
             />
-          </use>
-          <g cursor="pointer">
+
             <animate
+              class="gauge-done"
               begin="indefinite"
-              class="gauge-connecting"
-              attributeName="cursor"
-              to="default"
+              attributeName="opacity"
+              dur="500ms"
+              calcMode="spline"
+              keyTimes="0;1"
+              keySplines="0.3 0.3 0.1 1"
+              to="0"
               fill="freeze"
             />
+          </use>
+          <g id="button-to-gauge-group" class="">
             <text class="buttonTxt" dominant-baseline="middle" x="50%" y="51%">
               START
               <animate
@@ -537,7 +603,7 @@
             >
             </circle> -->
             <circle
-              id="gauge"
+              id="button-to-gauge"
               r="80"
               cx="158"
               cy="158"
@@ -549,6 +615,7 @@
             >
               <!-- 1. SPEED TEST STARTING -->
               <animate
+                id="gauge-connecting-r"
                 begin="indefinite"
                 class="gauge-connecting"
                 attributeName="r"
@@ -641,9 +708,61 @@
                 to="120"
                 fill="freeze"
               />
+              <animateTransform
+                class="gauge-preparing"
+                begin="indefinite"
+                attributeName="transform"
+                type="translate"
+                dur="500ms"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"
+              />
+              <!-- 4. SPEED TEST DONE -->
+              <animate
+                class="gauge-done"
+                begin="indefinite"
+                attributeName="stroke-width"
+                dur="500ms"
+                to="0"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"
+              />
+              <animate
+                class="gauge-done"
+                begin="indefinite"
+                attributeName="r"
+                dur="500ms"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                to="100"
+                fill="freeze"
+              />
+              <animate
+                class="gauge-done"
+                begin="indefinite"
+                attributeName="stroke-dasharray"
+                dur="500ms"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"
+              />
             </circle>
           </g>
-          
+          <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" viewBox="0 0 316 316"/>
+          <a href="#" id="startButtonDesk" cursor="pointer">
+            <circle r="84" cx="158" cy="158" fill="transparent">
+              <animate begin="indefinite" class="gauge-connecting" attributeName="display" to="none" fill="freeze" />
+            </circle>
+          </a>
+          <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"
+            height="41.62"></use>
+
           <!-- <text
             x="50%"
             y="50%"
@@ -675,441 +794,49 @@
         </svg>
       </div>
       <div id="testServerPanel" class="test-server-panel">
-        <span class="test-server-title text-one-line-only" title="Converge Solutions Inc. Sabihan mo yang kabit mo wag niya kameng idamay-damay kung ano-ano ginagawa niyang istorya para sa aming pamilya dahil hindi kame nakiki-alam sa buhay niyong mag-asawa kahit kapatid ko, kahit kapatid ko yung asawa mo hindi ako, kame nakiki-alam!">Converge Solutions Inc. Sabihan mo yang kabit mo wag niya kameng idamay-damay kung ano-ano ginagawa niyang istorya para sa aming pamilya dahil hindi kame nakiki-alam sa buhay niyong mag-asawa kahit kapatid ko, kahit kapatid ko yung asawa mo hindi ako, kame nakiki-alam!</span>
-        <span class="test-server-subtitle text-one-line-only">Mandaluyong</span>
+        <span class="test-server-title text-one-line-only" title="">(finding a test server...)</span>
+        <span class="test-server-subtitle text-one-line-only">---</span>
         <button type="button" class="change-test-server-button">Change test server</button>
       </div>
     </div>
   </div>
 
-
-  <svg class="Desktop2" viewBox="0 0 640 360" style="display: none;">
-    <!-- <title id="title1">Pure HTML5 Network Performance Estimation Tool. by OpenSpeedTest™️</title> -->
-    <g id="UI-Desk">
-      <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" x="10.28" y="36.11"
-        width="273.94" height="245.39"></use>
-      <!-- <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" x="10.28" y="36.11"
-        width="273.94" height="245.39"></use>
-      <use id="mainGaugeWhite-Desk" class="main-GaugeWhite" xlink:href="#mainGaugeWhite" x="10.28" y="36.11"
-        width="273.94" height="245.39"></use> -->
-
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="31" width="278.1" height="85.5">
-        <title id="title1">The download speed is how fast you can pull data from the server to you in the form of
-          images, videos, text and more. Activities such as listening to music on Spotify, downloading large files or
-          streaming videos on Netflix all require you to download data.</title>
-      </use>
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="129.3" width="278.1" height="85.5">
-        <title id="title1">The upload speed is how fast you send data from you to others in the form of images,
-          videos, text and more. Activities such as uploading to YouTube or Sending email, playing live games like
-          PubG, Voice and Video calling a friend require fast upload speeds for you to send data to someone else’s
-          server.</title>
-      </use>
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="228.5" width="278.1" height="85.5">
-        <title id="title1">Ping "Round-trip time" is more or less well defined as the network delay from point A to B
-          and back. This is the sum of all encoding, queueing, processing, decoding, and propagation delays in both
-          directions. Essentially, it's the delay when A may be expecting an answer from B for a request that requires
-          very little processing. A fast ping means a more responsive connection, especially in applications where
-          timing is everything (like video games). Ping is measured in Milliseconds (ms).
-
-          Jitter is simply the difference in Ping "Round-trip time" . In other words, jitter is measuring time
-          difference in packet inter-arrival time. Jitter helps diagnose internet connection stability. The higher the
-          jitter value, the worse the stability of the connection.</title>
-      </use>
-      <use id="downSymbolDesk" xlink:href="#downSymbol" class="Desktop" x="133" y="99" width="32.21" height="41.62">
-      </use>
-      <use id="upSymbolDesk" xlink:href="#upSymbol" class="Desktop" x="133" y="99" width="32.21" height="41.62"></use>
-
-      <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"
-        height="41.62"></use>
-
-      <use class="oDo-Meter" xlink:href="#oDoMeter" x="10.28" y="36.11" width="273.94" height="245.39"></use>
-      <use xlink:href="#progressBar" x="1" y="295" width="293.53" height="18.38"></use>
-
-      <use id="progressStatus-Desk" class="intro-Progress" xlink:href="#introProgress" x="29" y="295" width="234"
-        height="21"></use>
-
-      <use xlink:href="#downloadRc1" x="335.05" y="50.28" width="72" height="16">
-        <title id="title1">Download speed is measured in megabits per second (Mbps).</title>
-      </use>
-      <use xlink:href="#uploadRc2" x="345.33" y="145.2" width="48" height="16">
-        <title id="title1">Upload speed is measured in megabits per second (Mbps).</title>
-      </use>
-      <use xlink:href="#pingSymbol" x="351.4" y="243.8" width="14.3" height="14.4"></use>
-      <use xlink:href="#pingSymbol" x="481.3" y="244.6" width="14.33" height="14.4"></use>
-      <use xlink:href="#pingRc3" x="367.01" y="244.68" width="28" height="16">
-        <title id="title1">Ping is measured in Milliseconds (ms).</title>
-      </use>
-      <use xlink:href="#jitterRc3" x="495.61" y="246.3" width="39.95" height="13.85">
-        <title id="title1">Jitter is measured in Milliseconds (ms).</title>
-      </use>
-      <use xlink:href="#upSymbol" class="Symbol" x="329" y="146.5" width="11.8" height="13.9"></use>
-      <use xlink:href="#downSymbol" class="Symbol" x="318.7" y="51.9" width="11.8" height="13.8"></use>
-      <use xlink:href="#graphc2" x="427.84" y="134" width="200" height="135">
-        <title id="title1">Shows you real-time network traffic graph for Upload!</title>
-      </use>
-      <use xlink:href="#graphc1" x="427.84" y="35" width="200" height="135">
-        <title id="title1">Shows you real-time network traffic graph for Download!</title>
-      </use>
-      <use xlink:href="#downResultC1" x="298" y="67.21" width="200" height="45.1">
-        <title id="title1">Your download speed!</title>
-      </use>
-      <use xlink:href="#upResultC2" x="298" y="162.13" width="200" height="45.1">
-        <title id="title1">Your upload speed!</title>
-      </use>
-      <use xlink:href="#pingResultC3" x="303.73" y="261.55" width="200" height="45.1">
-        <title id="title1">Your ping!</title>
-      </use>
-      <use xlink:href="#jitterResultC3" x="420.04" y="262.17" width="200" height="45.1">
-        <title id="title1">Your jitter!</title>
-      </use>
-    </g>
-
-    <g id="intro-Desk2">
-      <!-- <use id="logo-Desk" xlink:href="#logo" x="35" y="140" width="222.8" height="50.22">
-        NetMesh
-      </use> -->
-
-      <use id="deskStart" class="deskStart" xlink:href="#startButtonDesk" x="10.28" y="36.11" width="273.94" height="245.39"></use>
-      
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="31" width="278.1" height="85.5"></use>
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="228.5" width="278.1" height="85.5"></use>
-      <use xlink:href="#resultCard" class="Cards" x="307.4" y="129.3" width="278.1" height="85.5"></use>
-
-      <use xlink:href="#downloadRc1" x="335.05" y="50.28" width="67" height="16">
-        <title id="title1">Download speed is measured in megabits per second (Mbps).</title>
-      </use>
-      <use xlink:href="#uploadRc2" x="345.33" y="145.2" width="47" height="16">
-        <title id="title1">Upload speed is measured in megabits per second (Mbps).</title>
-      </use>
-      <use xlink:href="#pingSymbol" x="351.4" y="243.8" width="14.3" height="14.4"></use>
-      <use xlink:href="#pingSymbol" x="481.3" y="244.6" width="14.33" height="14.4"></use>
-      <use xlink:href="#pingRc3" x="367.01" y="244.68" width="28" height="16">
-        <title id="title1">Ping is measured in Milliseconds (ms).</title>
-      </use>
-      <use xlink:href="#jitterRc3" x="495.61" y="246.3" width="39.95" height="13.85">
-        <title id="title1">Jitter is measured in Milliseconds (ms).</title>
-      </use>
-      <use xlink:href="#upSymbol" class="Symbol" x="329" y="146.5" width="11.8" height="13.9"></use>
-      <use xlink:href="#downSymbol" class="Symbol" x="318.7" y="51.9" width="11.8" height="13.8"></use>
-      <use xlink:href="#graphc2" x="427.84" y="134" width="200" height="135">
-        <title id="title1">Shows you real-time network traffic graph for Upload!</title>
-      </use>
-      <use xlink:href="#graphc1" x="427.84" y="35" width="200" height="135">
-        <title id="title1">Shows you real-time network traffic graph for Download!</title>
-      </use>
-      <use xlink:href="#downResultC1" x="298" y="67.21" width="200" height="45.1">
-        <title id="title1">Your download speed!</title>
-      </use>
-      <use xlink:href="#upResultC2" x="298" y="162.13" width="200" height="45.1">
-        <title id="title1">Your upload speed!</title>
-      </use>
-      <use xlink:href="#pingResultC3" x="303.73" y="261.55" width="200" height="45.1">
-        <title id="title1">Your ping!</title>
-      </use>
-      <use xlink:href="#jitterResultC3" x="420.04" y="262.17" width="200" height="45.1">
-        <title id="title1">Your jitter!</title>
-      </use>
-      <use id="nightmode"  class="darkmode" onclick="toggleSkin()" xlink:href="#dark" x="10" y="25" width="30" height="30">
-      </use>
-      <use id="daymode"  class="darkmode" onclick="toggleSkin()" xlink:href="#light" x="10" y="25" width="30" height="30">
-      </use>
-
-      <!-- <use id="startButtonDesk" class="startButton" xlink:href="#playButton" x="90" y="110" width="120" height="120">
-        <title id="title1">Click here to run a speed test!</title>
-      </use> -->
-      <use id="settingsDesk" class="Startsettings" xlink:href="#settings" x="100" y="260" width="100" height="40">
-        <title id="title1">Options</title>
-      </use>
-
-      <use class="Desktop" id="ipDesk" xlink:href="#YourIP" x="7" y="70"></use>
-    </g>
+  <svg display="none">
+    <symbol version="1.1" id="wifi-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="122.878px" height="88.858px" viewBox="0 0 122.878 88.858" enable-background="new 0 0 122.878 88.858" xml:space="preserve"><g><path d="M17.215,43.332l10.399,10.57c1.096-1.28,2.282-2.497,3.551-3.642c7.666-6.908,18.284-11.183,30.038-11.183v0.029h0.001h0 v-0.029c11.754,0,22.373,4.275,30.039,11.184c1.416,1.276,2.73,2.644,3.93,4.09l10.489-10.489 c-1.408-1.612-2.919-3.146-4.525-4.594c-10.243-9.233-24.363-14.944-39.932-14.944v-0.029h0h-0.001v0.029 c-15.567,0-29.688,5.711-39.931,14.944C19.843,40.555,18.489,41.913,17.215,43.332L17.215,43.332z M61.656,48.555L61.656,48.555 l0.001,0.028c10.656,0.001,20.332,3.913,27.358,10.237l0.003,0.002l-8.575,8.575l-1.977,1.848 c-4.388-3.666-10.294-5.908-16.81-5.908v0.029h-0.001h-0.001v-0.029c-6.846,0-13.019,2.476-17.464,6.477 c-0.111,0.1-0.221,0.2-0.33,0.302L33.86,59.221c0.145-0.135,0.29-0.268,0.438-0.4C41.324,52.496,51,48.584,61.655,48.583 L61.656,48.555L61.656,48.555L61.656,48.555z M61.933,71.679c4.264,0,8.143,1.648,11.036,4.341L60.5,88.858L49.909,77.021 C52.875,73.74,57.163,71.679,61.933,71.679L61.933,71.679z M10.005,34.716c0.629-0.616,1.272-1.22,1.929-1.813 c12.421-11.195,29.61-18.121,48.619-18.121v0.029h0.001l0,0v-0.029c19.01,0,36.198,6.926,48.619,18.122 c1.122,1.011,2.204,2.058,3.246,3.137l10.458-10.458c-1.226-1.262-2.496-2.487-3.811-3.672 C104.068,8.392,83.378,0.029,60.555,0.029V0l0,0h-0.001v0.029c-22.823,0-43.513,8.363-58.512,21.882 C1.348,22.535,0.668,23.171,0,23.818L10.005,34.716L10.005,34.716z"/></g></symbol>
+    <symbol version="1.1" id="test-server-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" viewBox="0 0 76.99 122.88" style="enable-background:new 0 0 76.99 122.88" xml:space="preserve"><style type="text/css">.st0{fill-rule:evenodd;clip-rule:evenodd;}</style><g><path class="st0" d="M58.33,91.24c0-0.15-0.01-0.29-0.01-0.44V2.44c0-0.15,0.01-0.3,0.01-0.44c-0.09-0.49-0.34-0.94-0.68-1.28 C57.21,0.28,56.6,0,55.94,0H10.02C9.35,0,8.74,0.28,8.3,0.72C7.85,1.16,7.58,1.77,7.58,2.44V90.8c0,0.67,0.28,1.28,0.72,1.72 c0.44,0.45,1.05,0.72,1.72,0.72h17.91v3.93c-2.17,0.62-4.1,1.78-5.65,3.33c-1.51,1.51-2.66,3.39-3.29,5.49H0v7.23h0h18.89 c0.61,2.23,1.79,4.22,3.38,5.81c2.37,2.37,5.65,3.84,9.27,3.84c3.62,0,6.89-1.47,9.27-3.84c1.59-1.59,2.77-3.58,3.38-5.81h32.81 V106h-32.9c-0.63-2.1-1.78-3.98-3.29-5.49c-1.55-1.55-3.49-2.71-5.65-3.33v-3.93h20.79c0.66,0,1.27-0.28,1.72-0.72 C57.99,92.18,58.24,91.74,58.33,91.24L58.33,91.24L58.33,91.24z M35.69,105.62c-1.06-1.06-2.53-1.72-4.16-1.72 c-1.62,0-3.09,0.66-4.16,1.72c-1.06,1.06-1.72,2.53-1.72,4.16c0,1.62,0.66,3.09,1.72,4.16c1.06,1.06,2.53,1.72,4.16,1.72 c1.62,0,3.09-0.66,4.16-1.72c1.06-1.06,1.72-2.53,1.72-4.16C37.41,108.15,36.75,106.68,35.69,105.62L35.69,105.62z M39.53,73.07 c0,4.01-3.25,7.26-7.26,7.26c-4.01,0-7.26-3.25-7.26-7.26c0-4.01,3.25-7.26,7.26-7.26C36.28,65.8,39.53,69.05,39.53,73.07 L39.53,73.07z M49.32,10.36v6.11H16.63v-6.11H49.32L49.32,10.36L49.32,10.36z M49.32,27.24v6.11H16.63v-6.11H49.32L49.32,27.24 L49.32,27.24z M49.32,44.13v6.11H16.63v-6.11H49.32L49.32,44.13L49.32,44.13z"/></g></symbol>
   </svg>
-  
-  <svg class="Mobile" viewBox="0 0 295.9 363.3" style="display: none">
-    <title id="title1">
-      Pure HTML5 Network Performance Estimation Tool. by OpenSpeedTest™️
-    </title>
-    <g id="UI-Mob">
-      <use
-        id="mainGaugebg-Mob"
-        class="main-Gaugebg"
-        xlink:href="#mainGaugebg"
-        x="11.18"
-        y="12"
-        width="273.94"
-        height="245.39"
-      ></use>
-      <use
-        id="mainGaugeBlue-Mob"
-        class="main-GaugeBlue"
-        xlink:href="#mainGaugeBlue"
-        x="11.18"
-        y="12"
-        width="273.94"
-        height="245.39"
-      ></use>
-      <use
-        id="mainGaugeWhite-Mob"
-        class="main-GaugeWhite"
-        xlink:href="#mainGaugeWhite"
-        x="11.18"
-        y="12"
-        width="273.94"
-        height="245.39"
-      ></use>
-  
-      <use
-        xlink:href="#resultCardMob"
-        class="Cards"
-        x="1"
-        y="297.52"
-        width="88.1"
-        height="65.8"
-      >
-        <title id="title1">
-          The download speed is how fast you can pull data from the server to you
-          in the form of images, videos, text and more. Activities such as
-          listening to music on Spotify, downloading large files or streaming
-          videos on Netflix all require you to download data.
-        </title>
-      </use>
-      <use
-        xlink:href="#resultCardMob"
-        class="Cards"
-        x="104.1"
-        y="297.52"
-        width="88.1"
-        height="65.8"
-      >
-        <title id="title1">
-          The upload speed is how fast you send data from you to others in the
-          form of images, videos, text and more. Activities such as uploading to
-          YouTube or Sending email, playing live games like PubG, Voice and Video
-          calling a friend require fast upload speeds for you to send data to
-          someone else’s server.
-        </title>
-      </use>
-      <use
-        xlink:href="#resultCardMob"
-        class="Cards"
-        x="207.1"
-        y="297.52"
-        width="88.1"
-        height="65.8"
-      >
-        <title id="title1">
-          Ping "Round-trip time" is more or less well defined as the network delay
-          from point A to B and back. This is the sum of all encoding, queueing,
-          processing, decoding, and propagation delays in both directions.
-          Essentially, it's the delay when A may be expecting an answer from B for
-          a request that requires very little processing. A fast ping means a more
-          responsive connection, especially in applications where timing is
-          everything (like video games). Ping is measured in Milliseconds (ms).
-          Jitter is simply the difference in Ping "Round-trip time" . In other
-          words, jitter is measuring time difference in packet inter-arrival time.
-          Jitter helps diagnose internet connection stability. The higher the
-          jitter value, the worse the stability of the connection.
-        </title>
-      </use>
-      <use
-        id="upSymbolMob"
-        xlink:href="#upSymbol"
-        class="Mobile"
-        x="134"
-        y="73"
-        width="32.21"
-        height="41.62"
-      ></use>
-      <use
-        id="downSymbolMob"
-        xlink:href="#downSymbol"
-        class="Mobile"
-        x="134"
-        y="73"
-        width="32.21"
-        height="41.62"
-      ></use>
-      <use
-        id="ConnectErrorMob"
-        xlink:href="#ConnectError"
-        class="ConnectError"
-        x="135.9"
-        y="74.02"
-        width="32.21"
-        height="41.62"
-      ></use>
-      <use
-        class="oDo-Meter"
-        xlink:href="#oDoMeter"
-        x="11.18"
-        y="12"
-        width="273.94"
-        height="245.39"
-      ></use>
-      <use
-        xlink:href="#progressBar"
-        x="1.9"
-        y="272.08"
-        width="293.53"
-        height="18.38"
-      ></use>
-      <use
-        id="progressStatus-Mob"
-        class="intro-Progress"
-        xlink:href="#introProgress"
-        x="29"
-        y="272"
-        width="234.5"
-        height="21.5"
-      ></use>
-  
-      <use xlink:href="#downloadRc1" x="22.36" y="301.63" width="60" height="15">
-        <title id="title1">
-          Download speed is measured in megabits per second (Mbps).
-        </title>
-      </use>
-      <use xlink:href="#uploadRc2" x="237.51" y="301.64" width="42" height="15">
-        <title id="title1">
-          Upload speed is measured in megabits per second (Mbps).
-        </title>
-      </use>
-      <use xlink:href="#pingRc3" x="143.88" y="301.72" width="26" height="15">
-        <title id="title1">Ping is measured in Milliseconds (ms).</title>
-      </use>
-      <use
-        xlink:href="#upSymbol"
-        class="Symbol"
-        x="221.8"
-        y="303.42"
-        width="12.3"
-        height="10.6"
-      ></use>
-      <use
-        xlink:href="#downSymbol"
-        class="Symbol"
-        x="7.7"
-        y="303.42"
-        width="10.6"
-        height="12.4"
-      ></use>
-      <use
-        xlink:href="#pingSymbol"
-        x="126.8"
-        y="303.32"
-        width="12.5"
-        height="12.4"
-      ></use>
-      <use
-        id="graphMob1"
-        xlink:href="#graphc1"
-        x="83.1"
-        y="160.45"
-        width="200"
-        height="135"
-      >
-        <title id="title1">
-          Shows you real-time network traffic graph for Download!
-        </title>
-      </use>
-      <use
-        id="graphMob2"
-        xlink:href="#graphc2"
-        x="83.1"
-        y="160.45"
-        width="200"
-        height="135"
-      >
-        <title id="title1">
-          Upload speed is measured in megabits per second (Mbps).
-        </title>
-      </use>
-      <use xlink:href="#jitterMob" x="71.14" y="317.65" width="200" height="45.1">
-        <title id="title1">Your ping! and Jitter</title>
-      </use>
-      <use xlink:href="#upResultC2" x="182" y="317.67" width="200" height="45.1">
-        <title id="title1">Your upload speed!</title>
-      </use>
-      <use
-        xlink:href="#downResultC1"
-        x="-25"
-        y="317.64"
-        width="200"
-        height="45.1"
-      >
-        <title id="title1">Your download speed!</title>
-      </use>
-    </g>
-    <g id="intro-Mob">
-      <use
-        id="nightmode-Mob"
-        class="darkmode"
-        onclick="toggleSkin()"
-        xlink:href="#dark"
-        x="10"
-        y="25"
-        width="30"
-        height="30"
-      ></use>
-      <use
-        id="daymode-Mob"
-        class="darkmode"
-        onclick="toggleSkin()"
-        xlink:href="#light"
-        x="10"
-        y="25"
-        width="30"
-        height="30"
-      ></use>
-      <use
-        id="logo-Desk"
-        xlink:href="#logo"
-        x="38"
-        y="110"
-        width="218.8"
-        height="50.22"
-      ></use>
-  
-      <use
-        id="deskStartMob"
-        class="deskStart"
-        xlink:href="#mainGaugebg"
-        x="11.18"
-        y="12"
-        width="273.94"
-        height="245.39"
-      ></use>
-      <use
-        id="startButtonMob"
-        class="startButton"
-        xlink:href="#playButton"
-        x="125"
-        y="280"
-        width="50.2"
-        height="50.2"
-      >
-        <title id="title1">Click here to run a speed!</title>
-      </use>
-  
-      <use
-        id="settingsMob"
-        class="Startsettings"
-        xlink:href="#settings"
-        x="100"
-        y="240"
-        width="100"
-        height="40"
-      >
-        <title id="title1">Options</title>
-      </use>
-      <use class="Mobile" id="ipMob" xlink:href="#YourIP" x="11" y="49"></use>
-    </g>
-  </svg>
-  
 
-  <div style="text-align: center; display:none;visibility:hidden">
-    <a id='text' href="http://openspeedtest.com?ref=OfflineTool">SpeedTest by OpenSpeedTest.COM</a>
+  <!-- Trigger/Open The Modal -->
+  <!-- <button id="myBtn">Open Modal</button> -->
+
+  <!-- The Modal -->
+  <div id="network-error-modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <span class="close">&times;</span> -->
+        <h2 class="modal-title text-danger">Network Error</h2>
+      </div>
+      <div class="modal-body">
+        <p>
+          Oops! Something went wrong while connecting to the server. Please check your internet connection and try again.
+        </p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary close">Try again</button>
+      </div>
+    </div>
   </div>
+
+  <!-- <div style="text-align: center; display:none;visibility:hidden">
+    <a id='text' href="http://openspeedtest.com?ref=OfflineTool">SpeedTest by OpenSpeedTest.COM</a>
+  </div> -->
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.2/socket.io.js" integrity="sha512-VJ6+sp2E5rFQk05caiXXzQd1wBABpjEj1r5kMiLmGAAgwPItw1YpqsCCBtq8Yr1x6C49/mTpRdXtq8O2RcZhlQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+  <script src="/assets/js/modal.js"></script>
   <script src="/assets/js/netmesh.js"></script>
+  <script src="/assets/js/beginning.js"></script>
   <!-- <script src="/assets/js/darkmode.js"></script> -->
 
   <script>

@@ -3,29 +3,72 @@
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 400;
-  src: url('../fonts/ubuntu-v20-latin-regular.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/Ubuntu/ubuntu-v20-latin-regular.eot'); /* IE9 Compat Modes */
   src: local(''),
-       url('../fonts/ubuntu-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/ubuntu-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
-       url('../fonts/ubuntu-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/ubuntu-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/ubuntu-v20-latin-regular.svg#Ubuntu') format('svg'); /* Legacy iOS */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-regular.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-regular.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-regular.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-regular.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-regular.svg#Ubuntu') format('svg'); /* Legacy iOS */
 }
 /* ubuntu-500 - latin */
 @font-face {
   font-family: 'Ubuntu';
   font-style: normal;
   font-weight: 500;
-  src: url('../fonts/ubuntu-v20-latin-500.eot'); /* IE9 Compat Modes */
+  src: url('../fonts/Ubuntu/ubuntu-v20-latin-500.eot'); /* IE9 Compat Modes */
   src: local(''),
-       url('../fonts/ubuntu-v20-latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
-       url('../fonts/ubuntu-v20-latin-500.woff2') format('woff2'), /* Super Modern Browsers */
-       url('../fonts/ubuntu-v20-latin-500.woff') format('woff'), /* Modern Browsers */
-       url('../fonts/ubuntu-v20-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
-       url('../fonts/ubuntu-v20-latin-500.svg#Ubuntu') format('svg'); /* Legacy iOS */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-500.eot?#iefix') format('embedded-opentype'), /* IE6-IE8 */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-500.woff2') format('woff2'), /* Super Modern Browsers */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-500.woff') format('woff'), /* Modern Browsers */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-500.ttf') format('truetype'), /* Safari, Android, iOS */
+       url('../fonts/Ubuntu/ubuntu-v20-latin-500.svg#Ubuntu') format('svg'); /* Legacy iOS */
+}
+
+:root {
+  --surface-color: #F2F0F4;
+  --on-surface-color: #1B1B1F;
+  --error-color: #BA1A1A;
+  --error-background-color: #FFDAD6;
+  --modal-background-color: rgb(242, 240, 244, 0.75);
+
+  --primary-color: #3056C4;
+  --on-primary-color: #FFFFFF;
+
+  --secondary-color: #575D78;
+
+  --connecting-color: #3056C4;
+  --gauge-background-color: #C6C6D0;
+
+  --speed-number-off-color: rgba(118, 118, 128, 0.75);
+  --download-speed-color: #1C60A5;
+  --upload-speed-color: #6D4EA1;
+  --max-speed-color: #D1B000;
+}
+
+html.dark-theme {
+  --surface-color: #2F3038;
+  --on-surface-color: #E4E1E6;
+  --error-color: #FFB4AB;
+  --error-background-color: #93000A;
+  --modal-background-color: rgb(47, 48, 56, 0.75);
+
+  --primary-color: #B6C4FF;
+  --on-primary-color: #00287D;
+
+  --secondary-color: #BFC5E4;
+  
+  --connecting-color: #688AFB;
+  --gauge-background-color: #45464F;
+
+  --speed-number-off-color: rgba(143, 144, 154, 0.75);
+  --download-speed-color: #A4C8FF;
+  --upload-speed-color: #D5BBFF;
+  --max-speed-color: #FFD700;
 }
 
 body {
+  background-color: var(--surface-color);
   margin: 0px;
   padding: 0px;
   display: block;
@@ -35,15 +78,24 @@ body {
   display: none;
 }
 
+/* .scratch-div {
+  height: 480px;
+  width: 480px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  background-image: url('../images/ntc-logo.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: -1000;
+} */
+
 .openSpeedtestApp {
   height: 100vh;
   width: 100vw;
   display: none;
-  overflow: auto;
-  /* background-image: url('../images/netmesh-web-measuring.jpg');
-  background-size: contain;
-  background-repeat: no-repeat;
-  background-position: center center; */
 }
 
 .speedtestApp {
@@ -58,6 +110,7 @@ body {
 
 .text-one-line-only {
   text-overflow: ellipsis;
+  word-break: break-all;
   overflow: hidden;
   max-width: 1080px;
   display: -webkit-box;
@@ -69,7 +122,9 @@ body {
 .circle-icon {
   width: 20px;
   height: 20px;
-  border: 1px solid black;
+  image-rendering: auto;
+  color: var(--on-surface-color);
+  border: 1px solid var(--secondary-color);
   padding: 4px;
   margin-bottom: 4px;
   border-radius: 50%;
@@ -79,28 +134,162 @@ body {
   position: absolute;
   display: flex;
   flex-direction: column;
+  width: 100vw;
   height: 100vh;
-  max-height: 100%;
+  overflow: auto;
+  min-width: 225px;
+  min-height: 400px;
+  visibility: hidden;
+  background-color: rgba(255, 255, 255, 0);
+  opacity: 1;
+}
+
+#startButtonDesk {
+  /* display: none; */
+}
+#button-to-gauge-group.hover {
+  filter: drop-shadow(0rem 0rem 0.25rem var(--gauge-background-color)) brightness(1.2);
+}
+#button-to-gauge-group.disabled {
+  filter: blur(0.25rem) grayscale(0.5) brightness(0.75) opacity(0.25);
+}
+
+#start-button-gradient>stop:nth-child(1) {
+  stop-color: var(--download-speed-color);
+}
+#start-button-gradient>stop:nth-child(2) {
+  stop-color: var(--upload-speed-color);
 }
 
 .speed-connection-progress-panel-container {
+  display: flex;
+  width: 100vw;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.speed-connection-progress-panel {
+  padding: 16px 0px 0px 0px;
+  display: flex;
+  width: calc(100vw - 60px);
+  align-items: center;
+  max-width: 1080px;
+  height: 100%;
+}
+.speed-connection-progress-names {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 0px 0px 16px 0px;
+  max-width: 1080px;
+  width: calc(100vw - 60px);
+}
+.speed-connection-progress-names .network-connection-title {
+  color: var(--secondary-color);
+  font-size: max(12px, 2.25vh);
+  margin-right: 8px;
+}
+.speed-connection-progress-names .test-server-title {
+  color: var(--secondary-color);
+  font-size: max(12px, 2.25vh);
+  margin-left: 8px;
+}
+.speed-connection-progress-panel .bar {
+  flex: 1;
+  border-top: 1px dashed var(--speed-number-off-color);
+}
+.ping-progress-bar {
+  display: block;
+  position: relative;
+  border-top: 1px solid var(--secondary-color);
+  left: 30px;
+  bottom: 15px;
+  width: 0%;
+}
+.download-progress-bar {
+  display: block;
+  position: relative;
+  border-top: 5px solid var(--download-speed-color);
+  filter: brightness(1.25);
+  left: calc(100% + 30px);
+  bottom: 18px;
+  translate: -100% 0%;
+  width: 0%;
+}
+.upload-progress-bar {
+  display: none;
+  position: relative;
+  border-top: 5px solid var(--upload-speed-color);
+  filter: brightness(1.25);
+  left: 30px;
+  bottom: 18px;
+  width: 0%;
+}
+
+.speed-results-panel-container {
+  display: flex;
+  flex: 1;
+  width: 100vw;
+  justify-content: center;
+  align-items: center;
+  padding-top: 16px;
+}
+.speed-results-panel {
+  display: flex;
+  justify-content: center;
+  width: clamp(220px, 120vw, 400px);
+}
+.speed-results-column {
+  margin:  clamp(6px, 1vh, 1vh);
+  text-align: center;
+}
+.speed-unit {
+  color: var(--on-surface-color);
+  font-size: clamp(11px, 2.2vh, 2.2vh);
+}
+.speed-label {
+  color: var(--on-surface-color);
+  font-size: clamp(11px, 2.2vh, 2.2vh);
+  font-weight: 500;
+}
+.speed-value {
+  color: var(--on-surface-color);
+  font-size: clamp(20px, 5vh, 5vh);
+  font-weight: 500;
+}
+.max-speed-gradient-stop {
+  stop-color: var(--max-speed-color);
+}
+.ping-jitter-container {
+  color: var(--on-surface-color);
+  margin-top: clamp(10px, 2vh, 2vh);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.ping-jitter-value {
+  color: var(--on-surface-color);
+  font-size: clamp(10px, 2.1vh, 2.1vh);
+  font-weight: 500;
+  width: clamp(36px, 16vw, 64px);
+  text-align: end;
+}
+.speed-response-label {
+  font-size: clamp(10px, 2.1vh, 2.1vh);
+}
+.speed-response-unit {
+  font-size: clamp(10px, 2.1vh, 2.1vh);
+}
+
+.speed-graph-panel-container {
   flex: 1;
   display: flex;
   width: 100vw;
   justify-content: center;
-}
-
-.speed-connection-progress-panel {
-  padding: 16px;
-  display: flex;
-  width: calc(100vw - 32px);
   align-items: center;
-  max-width: 320px;
 }
-.speed-connection-progress-panel .bar {
-  flex: 1;
-  border-top: 1px solid red;
-  margin-bottom: 3px;
+.speed-graph-panel {
+  max-width: 1080px;
 }
 
 .network-connection-panel {
@@ -112,13 +301,14 @@ body {
   /* background: #eee; */
 }
 .network-connection-title {
-  font-size: 28px;
+  color: var(--download-speed-color);
+  font-size: max(14px, 3vh);
   text-align: center;
 }
 .network-connection-subtitle {
-  font-size: 18px;
+  color: var(--secondary-color);
+  font-size: max(11px, 2vh);
 }
-
 
 .main-gauge-panel {
   flex: 3;
@@ -140,11 +330,13 @@ body {
   /* background: #e8e; */
 }
 .test-server-title {
-  font-size: 28px;
+  color: var(--upload-speed-color);
+  font-size: max(14px, 3vh);
   text-align: center;
 }
 .test-server-subtitle {
-  font-size: 18px;
+  color: var(--secondary-color);
+  font-size: max(11px, 2vh);
 }
 .change-test-server-button {
   font-family: Ubuntu;
@@ -159,38 +351,6 @@ body {
 .change-test-server-button:hover {
   background: rgba(128, 128, 128, 0.8);
   cursor: pointer;
-}
-
-@keyframes zoom-out-slightly-down {
-  from {
-    scale: 1;
-    translate: none;
-    opacity: 1;
-  }
-  to {
-    scale: 0.8;
-    translate: 0 20%;
-    opacity: 0;
-  }
-}
-.zoom-out-slightly-down {
-  animation: zoom-out-slightly-down 0.2s ease-out forwards;
-}
-
-@keyframes zoom-out-slightly-up {
-  from {
-    scale: 1;
-    translate: none;
-    opacity: 1;
-  }
-  to {
-    scale: 0.8;
-    translate: 0 -20%;
-    opacity: 0;
-  }
-}
-.zoom-out-slightly-up {
-  animation: zoom-out-slightly-up 0.2s ease-out forwards;
 }
 
 @media screen and (max-height: 599px) {
@@ -213,6 +373,43 @@ body {
     font-size: 14px;
   }
 }
+/* 
+@media screen and (min-aspect-ratio: 8192/3486) {
+  body {
+    background-color: red;
+  }
+  .speedtestApp {
+    flex-direction: row;
+  }
+  .network-connection-panel {
+    align-items: end;
+    justify-content: center;
+  }
+  .test-server-panel {
+    align-items: start;
+    justify-content: center;
+  }
+} */
+
+/* @media screen and (max-aspect-ratio: 3486/8192) {
+  body {
+    background-color: blue;
+  }
+  .speedtestApp {
+    flex-direction: row;
+  }
+  .network-connection-panel {
+    align-items: end;
+    justify-content: center;
+  }
+  .test-server-panel {
+    align-items: start;
+    justify-content: center;
+  }
+} */
+
+.main-gauge-circle {
+}
 
 .main-Gaugebg {
   fill: none;
@@ -224,7 +421,6 @@ body {
 }
 .main-GaugeBlue {
   fill: none;
-  stroke: url(#gradient);
   stroke-linecap: flat;
   stroke-linejoin: flat;
   stroke-opacity: 0;
@@ -239,27 +435,38 @@ body {
   stroke-dashoffset: 1;
   stroke-opacity: 0;
 }
-.oDo-Meter {
-  font-size: 16px;
-  fill: gray;
-  font-family: Ubuntu-Medium, Ubuntu;
-  font-weight: 500;
+
+#gauge-meter-scale {
+  font-size: 15px;
+  fill: var(--speed-number-off-color);
+  font-family: Ubuntu;
+  font-weight: 400;
 }
+
+.oDoTop-Speed {
+  font-size: 15px;
+  fill: var(--speed-number-off-color);
+  font-family: Ubuntu;
+  font-weight: 400;
+  text-anchor: end;
+}
+
 .oDoLive-Speed {
-  font-size: 40px;
-  fill: #201e1e;
-  font-family: Ubuntu-Medium, Ubuntu;
+  font-size: 44px;
+  fill: var(--on-surface-color);
+  font-family: Ubuntu;
   font-weight: 500;
   text-anchor: middle;
 }
 
 .oDoLive-Status {
-  font-size: 18px;
-  fill: #d2d1d2;
-  font-family: Ubuntu-Medium, Ubuntu;
+  font-size: 16px;
+  fill: var(--secondary-color);
+  font-family: Ubuntu;
   font-weight: 400;
   text-anchor: middle;
 }
+
 .uiBg {
   fill: #d2d1d2;
 }
@@ -305,17 +512,14 @@ body {
   text-anchor: middle;
 }
 .startButton {
-  fill: url(#RadialGradient1);
-  -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-  -webkit-tap-highlight-color: transparent;
   cursor: pointer;
   pointer-events: visible;
 }
 .buttonTxt {
   font-size: 36px;
-  fill: url(#RadialGradient1);
-  font-family: Ubuntu-Medium, Ubuntu;
-  font-weight: 600;
+  fill: var(--primary-color);
+  font-family: Ubuntu;
+  font-weight: bold;
   text-anchor: middle;
 }
 
@@ -357,6 +561,7 @@ body {
   stroke-dasharray: 400;
   stroke-dashoffset: 0;
 }
+
 .deskStart {
   fill: none;
   stroke: rgb(231, 231, 232);
@@ -371,13 +576,6 @@ body {
 }
 #UI-Mob {
   display: none;
-}
-.oDoTop-Speed {
-  font-size: 16.96px;
-  fill: gray;
-  font-family: Ubuntu-Medium, Ubuntu;
-  font-weight: 500;
-  text-anchor: end;
 }
 #upSymbolDesk {
   fill: #14b0fe;

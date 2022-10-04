@@ -17,9 +17,9 @@
      Read full license terms @ http://go.openspeedtest.com/License
      If you have any Questions, ideas or Comments Please Send it via -> https://go.openspeedtest.com/SendMessage
 */
-window.onload = function () {
-    OpenSpeedTest.Start();
-    ostOnload()
+window.onload = async function () {
+    await OpenSpeedTest.Start();
+    ostOnload();
 };
 
 window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
@@ -34,12 +34,12 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     var n, Ha, Ia = function (a) {
         a && "function" === typeof a && a()
     };
-    const results = {
+    const results = Object.seal({
         download: null,
         upload: null,
         ping: null,
         jitter: null,
-    }
+    });
     g.prototype.fade = function (a, c, f) {
         var e = "in" === a,
             t = e ? 0 : 1,
@@ -102,96 +102,145 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.graphc2 = g("graphc2");
             this.graphMob2 = g("graphMob2");
             this.graphMob1 = g("graphMob1");
-            this.text = g("text");
+            // this.text = g("text");
+
+            this.pingProgressBarElement = document.getElementById('pingProgressBar');
+            this.gaugeContainer = document.getElementById('gauge-container');
+            this.f2BlurElement = document.querySelector("#f2 feGaussianBlur");
+            this.gaugeCircleElement = document.getElementById('gauge-circle');
+            this.gaugeScaleElement = g('gauge-meter-scale');
+            this.speedNeedle = g('speed-needle');
+
+            this.uploadTestProgressBarElement = document.getElementById('uploadTestProgressBar');
+            this.downloadTestProgressBarElement = document.getElementById('downloadTestProgressBar');
+            this.networkErrorModal = document.getElementById("network-error-modal");
+
             this.kalahatingBuka = 52;
             this.gaugeRadius = 120;
-            this.getScaleDegree = function (scaleNumber, scaleCount) {
+            this.scaleRadius = 108;
+            this.getScaleArcLength = function (scaleNumber, scaleCount) {
                 return (3.1416 * this.gaugeRadius * 2 * (1 - (this.kalahatingBuka / 180))) * (1 - (scaleNumber / scaleCount))
             }
-            this.scale = [
-                {
-                    degree: this.getScaleDegree(0, 8),
-                    value: 0
-                },
-                {
-                    degree: this.getScaleDegree(1, 8),
-                    value: 5
-                },
-                {
-                    degree: this.getScaleDegree(2, 8),
-                    value: 15
-                },
-                {
-                    degree: this.getScaleDegree(3, 8),
-                    value: 30
-                },
-                {
-                    degree: this.getScaleDegree(4, 8),
-                    value: 50
-                },
-                {
-                    degree: this.getScaleDegree(5, 8),
-                    value: 100
-                },
-                {
-                    degree: this.getScaleDegree(6, 8),
-                    value: 300
-                },
-                {
-                    degree: this.getScaleDegree(7, 8),
-                    value: 500
-                },
-                {
-                    degree: this.getScaleDegree(8, 8),
-                    value: 1E3
-                }
-            ];
-            console.log( this.scale);
+            this.scaleValues = [0, 5, 15, 30, 50, 100, 300, 500, 1000];
+            this.scaleElements = [];
+            this.scaleTopSpeed = this.scaleValues[this.scaleValues.length - 1];
+            this.scale = [];
             this.polygon = this.chart = this.element = "";
-            this.width = 200;
+            this.width = Math.max(dlEstimatedMeasurementCount, ulEstimatedMeasurementCount);
             this.height = 50;
             this.maxValue = 0;
             this.values = [];
-            this.points = [];
+            this.d = [];
             this.vSteps = 5;
             this.measurements = [];
-            this.points = []
+            this.d = []
         };
     r.prototype.reset = function () {
         this.polygon = this.chart = this.element = "";
-        this.width = 200;
+        this.width = Math.max(dlEstimatedMeasurementCount, ulEstimatedMeasurementCount);
         this.height = 50;
         this.maxValue = 0;
         this.values = [];
-        this.points = [];
+        this.d = [];
         this.vSteps = 5;
         this.measurements = [];
-        this.points = []
+        this.d = []
     };
     r.prototype.ip = function () {
         "block" ===
             this.ipDesk.el.style.display ? (this.ipDesk.el.style.display = "none", this.ipMob.el.style.display = "none") : (this.ipDesk.el.style.display = "block", this.ipMob.el.style.display = "block")
     };
     r.prototype.prePing = function () {
-        this.loader.fade("out", 500);
+        // this.loader.fade("out", 500);
         this.OpenSpeedtest.fade("in", 1E3)
     };
     r.prototype.app = function () {
-        this.loader.fade("out", 500, this.ShowAppIntro())
+        const gaugeSize = 316;
+        const gaugeScaleCount = this.scaleValues.length - 1;
+        const baseGaugeScaleDegree = 90 - this.kalahatingBuka - (360 - this.kalahatingBuka * 2);
+        const gaugeScaleDegreeGap = (360 - this.kalahatingBuka * 2) / gaugeScaleCount;
+        // let scaleNodes = [];
+
+        this.gaugeScaleElement.el.innerHTML = '';
+        this.scale = [];
+        this.scaleValues.forEach((scaleValue, index) => {
+            const scaleDegree = baseGaugeScaleDegree + gaugeScaleDegreeGap * index;
+            this.scale.push({
+                degree: this.getScaleArcLength(index, gaugeScaleCount),
+                degreePosition: scaleDegree,
+                value: scaleValue
+            });
+
+            console.log();
+
+            const scaleNode = document.createElementNS("http://www.w3.org/2000/svg", 'text');
+            scaleNode.setAttribute('dominant-baseline', scaleDegree <= -180 || scaleDegree >= 0 ? 'middle' : 'hanging');
+            scaleNode.setAttribute('text-anchor', scaleDegree < -90 ? 'start' : scaleDegree > -90 ? 'end' : 'middle');
+
+            if (index === gaugeScaleCount) {
+                scaleNode.id = 'oDoTopSpeed';
+                scaleNode.classList.add('oDoTop-Speed');
+                scaleNode.innerHTML = `${scaleValue}+`;
+            } else {
+                scaleNode.id = `gauge-speed-${index}`;
+                scaleNode.innerHTML = scaleValue;
+            }
+
+            // scaleNodes.push(scaleNode);
+
+            this.gaugeScaleElement.el.appendChild(scaleNode);
+
+            const x = this.scaleRadius + this.scaleRadius * Math.round(Math.cos(scaleDegree * Math.PI / 180) * 1e6) / 1e6 + (gaugeSize - this.scaleRadius * 2) / 2;
+            const y = this.scaleRadius + this.scaleRadius * Math.round(Math.sin(scaleDegree * Math.PI / 180) * 1e6) / 1e6 + (gaugeSize - this.scaleRadius * 2) / 2;
+
+            scaleNode.setAttribute('transform', `translate(${x} ${y})`);
+
+            this.scaleElements.push(scaleNode);
+            this.oDoTopSpeed = g('oDoTopSpeed');
+        });
+
+        console.log("scale", this.scale);
+        console.log("gaugeScaleElement", this.gaugeScaleElement.el);
+
+        this.ShowAppIntro();
+        // this.loader.fade("out", 500, this.ShowAppIntro())
     };
     r.prototype.ShowAppIntro = function () {
-        this.OpenSpeedtest.fade("in", 1E3)
+        this.OpenSpeedtest.fade("in", .001)
         // this.UI_Desk.fade("in", 1E3);
     };
-    r.prototype.userInterface = function () {
+    r.prototype.userInterface = async function () {
         // ANIM 1. user pressed start
+
         console.log("start");
+
+        try {
+            window.flutter_inappwebview.callHandler('setSpeedTestData')
+                .then(function (data) {
+                    document.querySelectorAll('.test-server-title').forEach(element => {
+                        element.textContent = data.testServerName;
+                    });
+                })
+        } catch {
+
+        }
+
         var animations = document.getElementsByClassName("gauge-connecting");
 
         const sda = document.querySelector('animate.gauge-connecting[attributeName="stroke-dasharray"]');
-        const ra = document.querySelector('animate.gauge-connecting[attributeName="r"]');;
+        const ra = document.querySelector('animate.gauge-connecting[attributeName="r"]');
         const r = parseFloat(ra.getAttribute('to'));
-        sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52/180)))}, ${getArcLength(r * 2)}`);
+        sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52 / 180)))}, ${getArcLength(r * 2)}`);
+
+        document.querySelector('#start-button-gradient>stop:nth-child(1)>animate.gauge-connecting[attributeName="stop-color"]')
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color'));
+        document.querySelector('#start-button-gradient>stop:nth-child(2)>animate.gauge-connecting[attributeName="stop-color"]')
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color') + "00");
+
+        document.querySelector('#start-button-gradient>stop:nth-child(1)>animate.gauge-preparing[attributeName="stop-color"]')
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
+        document.querySelector('#start-button-gradient>stop:nth-child(2)>animate.gauge-preparing[attributeName="stop-color"]')
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
 
         for (var anim of animations) {
             anim.beginElement();
@@ -203,20 +252,36 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         const testServerPanel = document.getElementById('testServerPanel');
         testServerPanel.classList.add('zoom-out-slightly-up');
 
-        this.ShowUI();
+        const measuringScreenPanel = document.getElementById('measuringScreenPanel');
+        measuringScreenPanel.style.visibility = 'visible';
+        measuringScreenPanel.classList.add('fade-in');
+
+        const downloadSpeedGraph = this.graphc1.el;
+        downloadSpeedGraph.setAttribute('viewBox', `0,0,${dlEstimatedMeasurementCount}, 50`);
+
+        const uploadSpeedGraph = this.graphc2.el;
+        uploadSpeedGraph.setAttribute('viewBox', `0,0,${ulEstimatedMeasurementCount}, 50`);
+
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                n = "Loaded";
+                resolve(true);
+            }, 300);
+        })
+
         // this.intro_Desk.fade("out", 1E3);
         // this.intro_Mob.fade("out",
         //     1E3, this.ShowUI())
     };
-    r.prototype.readyGauge = function() {
-        this.UI_Desk.fade("in", 500);
-        this.UI_Mob.fade("in", 500, function (a) {
-            
-            console.log("Developed by Vishnu. Email --\x3e me@vishnu.pro")
-        });
+    r.prototype.readyGauge = function () {
+        // this.UI_Desk.fade("in", 500);
+        // this.UI_Mob.fade("in", 500, function (a) {
+        // });
+
+        console.log("Developed by Vishnu. Email --\x3e me@vishnu.pro")
     }
-    r.prototype.ShowUI = function () {
-        const mainGauge = document.getElementById('gauge');
+    r.prototype.ShowUI = async function () {
+        const mainGauge = document.getElementById('button-to-gauge');
         const totalGaugeRadius = parseFloat(mainGauge.getAttribute('cx'));
         const gaugeStrokeWidth = parseFloat(mainGauge.getAttribute('stroke-width'));
         const actualGaugeRadius = totalGaugeRadius + gaugeStrokeWidth / 2;
@@ -224,8 +289,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         var animations = document.getElementsByClassName("gauge-starting");
         for (var anim of animations) {
             if (anim.id == "gauge-starting-rotate-anim") {
-                const s = document.getElementById("gauge");
-                const w = window.getComputedStyle(s, null);
+                const w = window.getComputedStyle(mainGauge, null);
                 const t = w.getPropertyValue("transform");
 
                 var values = t.split("(")[1];
@@ -234,8 +298,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 var a = values[0];
                 var b = values[1];
                 var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-
-                console.log(angle);
+                console.log("angle", angle);
                 anim.setAttribute(
                     "from",
                     `${angle >= 142 ? angle : angle + 360},158,158`
@@ -248,33 +311,62 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             }
             anim.beginElement();
         }
-        document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', () => {
-            n = "Loaded";
+        return new Promise((resolve) => {
+            document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', () => {
+                resolve();
+            });
         });
     };
     r.prototype.Symbol = function (a) {
-        0 == a && (this.downSymbolMob.el.style.display = "block", this.downSymbolDesk.el.style.display = "block", this.upSymbolMob.el.style.display = "none", this.upSymbolDesk.el.style.display = "none");
-        1 == a && (this.downSymbolMob.el.style.display = "none", this.downSymbolDesk.el.style.display = "none", this.upSymbolMob.el.style.display =
-            "block", this.upSymbolDesk.el.style.display = "block");
-        2 == a && (this.downSymbolMob.el.style.display = "none", this.downSymbolDesk.el.style.display = "none", this.upSymbolMob.el.style.display = "none", this.upSymbolDesk.el.style.display = "none")
+        // 0 == a && (this.downSymbolMob.el.style.display = "block", this.downSymbolDesk.el.style.display = "block", this.upSymbolMob.el.style.display = "none", this.upSymbolDesk.el.style.display = "none");
+        // 1 == a && (this.downSymbolMob.el.style.display = "none", this.downSymbolDesk.el.style.display = "none", this.upSymbolMob.el.style.display =
+        //     "block", this.upSymbolDesk.el.style.display = "block");
+        // 2 == a && (this.downSymbolMob.el.style.display = "none", this.downSymbolDesk.el.style.display = "none", this.upSymbolMob.el.style.display = "none", this.upSymbolDesk.el.style.display = "none")
     };
     r.prototype.Graph = function (a, c) {
         function f(p, z) {
             for (m = e.maxValue = 0; m < e.values.length; m++) e.values[m] > e.maxValue && (e.maxValue = e.values[m]);
             e.maxValue = Math.ceil(e.maxValue);
+            chartHeight = (dlDuration + 2.5) * 10 + 2;
             if (1 < e.values.length) {
-                p = "0," + e.height + " ";
-                for (m = 0; m < e.values.length; m++) z = e.values[m] / e.maxValue, z =
-                    (130 / (e.values.length - 1) * m).toFixed(2) + "," + (e.height - e.height * z).toFixed(2) + " ", p += z;
+                p = "M 0," + e.height + " ";
+                prev_x = null;
+                prev_y = null;
+                for (m = 0; m < e.values.length; m++) {
+                    // if (!(m % 5 == 0)) {
+                    //     continue;
+                    // }
+                    z = e.values[m] / e.maxValue;
+
+                    // curr_x = (130 / (e.values.length - 1) * m)
+                    curr_x = m
+                    curr_y = (e.height - e.height * z)
+
+                    if (m > 0) {
+                        mid_x = (prev_x + curr_x) / 2;
+                        mid_y = (prev_y + curr_y) / 2;
+                    }
+
+                    z = (m == 0 ? "Q " : "") + (m > 0 ? mid_x + "," + mid_y + " " : "") + curr_x + "," + curr_y + " ";
+                    // z = "M " + curr_x + "," + chartHeight + " " + "L " + curr_x + ", " + curr_y + " ";
+                    p += z;
+
+                    prev_x = curr_x;
+                    prev_y = curr_y;
+                }
                 // p += "130," + e.height;
-                e.points = p
+                e.d = p + prev_x + "," + e.height;
+                // if ( e.measurements.length / e.vSteps < 20) {
+                //     console.log(e.d);
+                // }
             }
             for (m = 0; m < e.vSteps; m++) e.measurements.push(Math.ceil(e.maxValue / e.vSteps * (m + 1)));
             e.measurements.reverse();
-            console.log("measurement-length", e.measurements.length / e.vSteps);
+            // console.log("measurement-length", e.measurements.length / e.vSteps);
+            // console.log("length: ", e.measurements.length / e.vSteps)
             for (p = document.getElementsByClassName(w); 0 < p.length;) p[0].remove();
-            e.polygon = document.createElementNS("http://www.w3.org/2000/svg", "polyline");
-            e.polygon.setAttribute("points", e.points);
+            e.polygon = document.createElementNS("http://www.w3.org/2000/svg", "path");
+            e.polygon.setAttribute("d", e.d);
             e.polygon.setAttribute("class", w);
             1 < e.values.length && t.appendChild(e.polygon)
         }
@@ -286,9 +378,13 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         if (0 === c) {
             var t = this.graphc1.el;
             var w = "line";
-            this.graphMob2.el.style.display = "none";
-            this.graphMob1.el.style.display = "block"
-        } else t = this.graphc2.el, w = "line2", this.graphMob1.el.style.display = "none", this.graphMob2.el.style.display = "block";
+            // this.graphMob2.el.style.display = "none";
+            // this.graphMob1.el.style.display = "block"
+        } else t = this.graphc2.el,
+            w = "line2";
+            // this.graphMob1.el.style.display = "none",
+            // this.graphMob2.el.style.display = "block";
+
         isNaN(a) ? this.values.push("") : this.values.push(a);
         var m;
         0 < a && f(t, a)
@@ -301,8 +397,25 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     e) / 1E3,
                     m = Ja(w, 400, 400, c),
                     p = Ja(w, 400, -400, c);
-                a ? (f.progressStatus_Desk.el.style.strokeDashoffset = m, f.progressStatus_Mob.el.style.strokeDashoffset = m) : (f.progressStatus_Desk.el.style.strokeDashoffset = p, f.progressStatus_Mob.el.style.strokeDashoffset = p);
-                w >= c && (clearInterval(t), Ha = "done", f.progressStatus_Desk.el.style.strokeDashoffset = 800, f.progressStatus_Mob.el.style.strokeDashoffset = 800)
+                // console.log("time: ", p)
+                a ? (// f.progressStatus_Desk.el.style.strokeDashoffset = m,
+                    // f.progressStatus_Mob.el.style.strokeDashoffset = m,
+                    f.downloadTestProgressBarElement.style.display = 'block',
+                    f.downloadTestProgressBarElement.style.width = `${(m - 400) / 400 * 100}%`,
+                    f.uploadTestProgressBarElement.style.display = 'none'
+                )
+                    : (// f.progressStatus_Desk.el.style.strokeDashoffset = p,
+                        // f.progressStatus_Mob.el.style.strokeDashoffset = p,
+                        f.uploadTestProgressBarElement.style.display = 'block',
+                        f.uploadTestProgressBarElement.style.width = `${(400 - p) / 400 * 100}%`,
+                        f.downloadTestProgressBarElement.style.display = 'none'
+                    )
+                w >= c && (clearInterval(t), Ha = "done",
+                    // f.progressStatus_Desk.el.style.strokeDashoffset = 800,
+                    // f.progressStatus_Mob.el.style.strokeDashoffset = 800,
+                    f.uploadTestProgressBarElement.style.width = 0,
+                    f.downloadTestProgressBarElement.style.width = 0
+                )
             }, 14)
     };
     r.prototype.mainGaugeProgress = function (a) {
@@ -318,73 +431,194 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }
 
         var f = this.getNonlinearDegree(c);
-        var adjustedMaxDegree = this.getScaleDegree(0, 6) - 0.0001;
+        var linearDegree = this.getLinearDegree(c);
+        this.speedNeedle?.el?.setAttribute('transform', `rotate(${linearDegree}, 158, 158)`);
+
+        var adjustedMaxDegree = this.getScaleArcLength(0, 6) - 0.0001;
         if (a > 0) {
             this.mainGaugeBlue_Desk.el.style.strokeOpacity = 1;
             this.mainGaugeWhite_Desk.el.style.strokeOpacity = 1;
 
-            this.mainGaugeBlue_Mob.el.style.strokeOpacity = 1;
-            this.mainGaugeWhite_Mob.el.style.strokeOpacity = 1;
+            // this.mainGaugeBlue_Mob.el.style.strokeOpacity = 1;
+            // this.mainGaugeWhite_Mob.el.style.strokeOpacity = 1;
 
             this.mainGaugeBlue_Desk.el.style.strokeDashoffset = f;
             this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
 
-            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = f;
-            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+            // this.mainGaugeBlue_Mob.el.style.strokeDashoffset = f;
+            // this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
         }
         if (f == 0 && c > 1000) {
-            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree <= f ? adjustedMaxDegree : f;
-            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
+            // this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree <= f ? adjustedMaxDegree : f;
+            // this.mainGaugeWhite_Mob.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
 
             this.mainGaugeWhite_Desk.el.style.strokeDashoffset = 0 == f ? 1 : f + 1;
             this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree <= f ? adjustedMaxDegree : f;
         } else if (f == 0 && c <= 0) {
-            this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
-            this.mainGaugeWhite_Mob.el.style.strokeDashoffset = .1;
-            
+            // this.mainGaugeBlue_Mob.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
+            // this.mainGaugeWhite_Mob.el.style.strokeDashoffset = .1;
+
             this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1;
             this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
         }
-
     };
     r.prototype.showStatus = function (a) {
         this.oDoLiveStatus.el.textContent = a
     };
     r.prototype.ConnectionError = function () {
-        this.ConnectErrorMob.el.style.display =
-            "block";
-        this.ConnectErrorDesk.el.style.display = "block"
+        // this.ConnectErrorMob.el.style.display =
+        //     "block";
+        // this.ConnectErrorDesk.el.style.display = "block";
+        this.networkErrorModal.style.display = 'block';
     };
     r.prototype.uploadResult = function (a) {
         results.upload = a;
         1 > a && (this.upRestxt.el.textContent = a.toFixed(3));
         1 <= a && 9999 > a && (this.upRestxt.el.textContent = a.toFixed(1));
-        1E4 <= a && 99999 > a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "20px");
-        1E5 <= a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "18px")
+        1E4 <= a && 99999 > a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "16px");
+        1E5 <= a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "14px")
     };
     r.prototype.pingResults = function (a, c) {
         results.ping = a;
-        "Ping" === c && (1 <= a && 1E4 > a ? (this.pingResult.el.textContent = Math.floor(a),
-            this.pingMobres.el.textContent = Math.floor(a)) : 0 <= a && 1 > a && (this.pingResult.el.textContent = a, this.pingMobres.el.textContent = a));
+        console.log("results.ping", a);
+        "Ping" === c && (
+            1 <= a && 1E4 > a ? (
+                this.pingResult.el.textContent = Math.floor(a)
+                // this.pingMobres.el.textContent = Math.floor(a)
+            ) : 0 <= a && 1 > a && (
+                this.pingResult.el.textContent = a
+                // this.pingMobres.el.textContent = a
+            )
+        );
         "Error" === c && (this.oDoLiveSpeed.el.textContent = a)
     };
     r.prototype.downloadResult = function (a) {
         results.download = a;
         1 > a && (this.downResult.el.textContent = a.toFixed(3));
         1 <= a && 9999 > a && (this.downResult.el.textContent = a.toFixed(1));
-        1E4 <= a && 99999 > a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize = "20px");
-        1E5 <= a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize =
-            "18px")
+        1E4 <= a && 99999 > a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize = "16px");
+        1E5 <= a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize = "14px")
     };
     r.prototype.jitterResult = function (a, c) {
         results.jitter = a;
-        "Jitter" === c && (1 <= a && 1E4 > a ? (this.jitterDesk.el.textContent = Math.floor(a), 1 <= a && 100 > a && (this.JitterResultMon.el.textContent = Math.floor(a)), 100 <= a && ((a / 1E3).toFixed(1), this.JitterResultMon.el.textContent = 1.1)) : 0 <= a && 1 > a && (this.jitterDesk.el.textContent = a, this.JitterResultMon.el.textContent = a))
+        "Jitter" === c && (
+            1 <= a && 1E4 > a ? (
+                this.jitterDesk.el.textContent = Math.floor(a)
+                // 1 <= a && 100 > a && (
+                //     this.JitterResultMon.el.textContent = Math.floor(a)
+                // ), 
+                // 100 <= a && (
+                //     (a / 1E3).toFixed(1),
+                //     this.JitterResultMon.el.textContent = 1.1
+                // )
+            ) : 0 <= a && 1 > a && (
+                this.jitterDesk.el.textContent = a
+                // this.JitterResultMon.el.textContent = a
+            )
+        )
     };
-    r.prototype.LiveSpeed = function (a, c) {
-        "countDown" === c ? (c = a.toFixed(0), this.oDoLiveSpeed.el.textContent = c) : "speedToZero" === c ? (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent =
-            c, this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 17, this.oDoTopSpeed.el.style.fill = "gray") : "Ping" === c ? 1 <= a && 1E4 > a ? this.oDoLiveSpeed.el.textContent = Math.floor(a) : 0 <= a && 1 > a && (this.oDoLiveSpeed.el.textContent = a) : (0 == a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1 >= a && 0 < a && (c = a.toFixed(3), this.oDoLiveSpeed.el.textContent = c), 1 < a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1E3 >= a && (this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize =
-                16.9, this.oDoTopSpeed.el.style.fill = "gray"), 1010 <= a && (this.oDoTopSpeed.el.textContent = 1E3 * Math.floor(a / 1010) + "+", this.oDoTopSpeed.el.style.fill = "#434040", this.oDoTopSpeed.el.style.fontSize = "20px"))
+    r.prototype.LiveSpeed = function (a, c, speedType) {
+        // "countDown" === c ? (c = a.toFixed(0), this.oDoLiveSpeed.el.textContent = c) : "speedToZero" === c ? (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent =
+        //     c, this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 16, this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)") : "Ping" === c ? 1 <= a && 1E4 > a ? this.oDoLiveSpeed.el.textContent = Math.floor(a) : 0 <= a && 1 > a && (this.oDoLiveSpeed.el.textContent = a) : (0 == a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1 >= a && 0 < a && (c = a.toFixed(3), this.oDoLiveSpeed.el.textContent = c), 1 < a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c), 1E3 >= a && (this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize =
+        //         14, this.oDoTopSpeed.el.style.fill = 'var(--speed-number-off-color)'), 1010 <= a && (this.oDoTopSpeed.el.textContent = 1E3 * Math.floor(a / 1010) + "+", this.oDoTopSpeed.el.style.fill = "#434040", this.oDoTopSpeed.el.style.fontSize = "16px"))
+        // "countDown" === c ? (
+        //     c = a.toFixed(0), this.oDoLiveSpeed.el.textContent = c
+        // )
+        // : "speedToZero" === c ? (
+        //     c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c, this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 16, this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)"
+        // )
+        // : "Ping" === c ? 
+        //     1 <= a && 1E4 > a ? this.oDoLiveSpeed.el.textContent = Math.floor(a)
+        //     : 0 <= a && 1 > a &&
+        //         (this.oDoLiveSpeed.el.textContent = a)
+        // : (
+        //     0 == a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c),
+        //     1 >= a && 0 < a && (c = a.toFixed(3), this.oDoLiveSpeed.el.textContent = c),
+        //     1 < a && (c = a.toFixed(1), this.oDoLiveSpeed.el.textContent = c),
+        //     1E3 >= a && (this.oDoTopSpeed.el.textContent = "1000+", this.oDoTopSpeed.el.style.fontSize = 14, this.oDoTopSpeed.el.style.fill = 'var(--speed-number-off-color)'),
+        //     1010 <= a && (this.oDoTopSpeed.el.textContent = 1E3 * Math.floor(a / 1010) + "+", this.oDoTopSpeed.el.style.fill = "#434040", this.oDoTopSpeed.el.style.fontSize = "16px")
+        // )
+        console.log("live-speed", c, a);
+        const topSpeed = this.scaleTopSpeed;
+        let topSpeedPlus = Math.max(topSpeed, 10 ** Math.floor(Math.log10(a)) * (Math.floor(a / 10 ** Math.floor(Math.log10(a)))));
+
+        if (c === undefined || c === "speedToZero") {
+            this.scale.forEach((s, i) => {
+                if (s.value == topSpeed) return;
+
+                const reachTheScaleSpeed = a > s.value;
+                if (reachTheScaleSpeed) {
+                    this.scaleElements[i].setAttribute('fill', speedType == "upload" ? 'var(--upload-speed-color)' : 'var(--download-speed-color)');
+                } else {
+                    this.scaleElements[i].setAttribute('fill', 'var(--speed-number-off-color)');
+                }
+            });
+        }
+
+        switch (c) {
+            case "countdown":
+                c = a.toFixed(0);
+                this.oDoLiveSpeed.el.textContent = c;
+                break;
+            case "speedToZero":
+                c = Math.floor(a).toFixed(0);
+                this.oDoLiveSpeed.el.textContent = c > 0 ? c : "";
+                this.oDoTopSpeed.el.textContent = a < topSpeed ? `${topSpeed}+` : topSpeedPlus + "+";
+                this.oDoTopSpeed.el.style.fontSize = 15;
+                this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)";
+                break;
+            case "Ping":
+                this.oDoLiveSpeed.el.textContent = "";
+                // if (1 <= a && 1E4 > a) {
+                //     this.oDoLiveSpeed.el.textContent = Math.floor(a);
+                // } else if (0 <= a && 1 > a) {
+                //     this.oDoLiveSpeed.el.textContent = a;
+                // }
+                break;
+            default:
+                if (0 == a) {
+                    c = a.toFixed(0);
+                    this.oDoLiveSpeed.el.textContent = c;
+                }
+                if (1 >= a && 0 < a) {
+                    c = a.toFixed(2);
+                    this.oDoLiveSpeed.el.textContent = c;
+                }
+                if (1 < a) {
+                    c = a.toFixed(2);
+                    this.oDoLiveSpeed.el.textContent = c;
+                }
+                if (10 < a) {
+                    c = a.toFixed(1);
+                    this.oDoLiveSpeed.el.textContent = c;
+                }
+                if (100 < a) {
+                    c = a.toFixed(0);
+                    this.oDoLiveSpeed.el.textContent = c;
+                }
+                if (topSpeed >= a) {
+                    this.oDoTopSpeed.el.textContent = `${topSpeed}+`;
+                    this.oDoTopSpeed.el.style.fontSize = 15;
+                    this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)"
+                }
+                if (topSpeed < a) {
+                    this.oDoTopSpeed.el.textContent = topSpeedPlus + "+";
+                    this.oDoTopSpeed.el.style.fill = "var(--max-speed-color)";
+                    this.oDoTopSpeed.el.style.fontSize = 16.5;
+                }
+        }
     };
+    r.prototype.SetGaugeColor = function (testType) {
+        if (testType == "upload") {
+            this.gaugeCircleElement.setAttribute('stroke', 'url(#upload-speed-gradient)');
+        } else {
+            this.gaugeCircleElement.setAttribute('stroke', 'url(#download-speed-gradient)');
+        }
+    }
+    r.prototype.SetGaugeBlur = function (speed) {
+        const blurAmount = speed <= 0 ? 0 : Math.min(2 ** Math.log10(speed / this.scaleTopSpeed * 1000) * 1.5 * ((speed / this.scaleTopSpeed * 1000) / 1000) ** (1 / 3), 12);
+        this.f2BlurElement.setStdDeviation(blurAmount, blurAmount);
+    }
     r.prototype.GaugeProgresstoZero = function (a, c) {
         var f = this;
         if (0 <= a) var e = Date.now(),
@@ -394,10 +628,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 var p = m / 3;
                 p--;
                 p = t * (p * p * p * p * p + 1) + a;
-                f.LiveSpeed(p, "speedToZero");
+                f.LiveSpeed(p, "speedToZero", c == "SendR" ? "upload" : "download");
                 f.mainGaugeProgress(p);
-                if (3 <= m || 0 >= p) clearInterval(w), f.LiveSpeed(0, "speedToZero"), f.mainGaugeProgress(0),
-                    n = c
+                f.SetGaugeBlur(p);
+                if (3 <= m || 0 >= p) clearInterval(w), f.LiveSpeed(0, "speedToZero"), f.mainGaugeProgress(0), f.SetGaugeBlur(0), n = c
             }, 16)
     };
     r.prototype.getNonlinearDegree = function (a) {
@@ -407,6 +641,14 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             if (a > this.scale[c].value) c++;
             else return this.scale[c - 1].degree + (a - this.scale[c - 1].value) * (this.scale[c].degree - this.scale[c - 1].degree) / (this.scale[c].value - this.scale[c - 1].value);
         return this.scale[this.scale.length - 1].degree
+    };
+    r.prototype.getLinearDegree = function (a) {
+        var c = 0;
+        if (0 == a || 0 >= a || isNaN(a)) return 0;
+        for (; c < this.scale.length;)
+            if (a > this.scale[c].value) c++;
+            else return this.scale[c - 1].degreePosition + (a - this.scale[c - 1].value) * (this.scale[c].degreePosition - this.scale[c - 1].degreePosition) / (this.scale[c].value - this.scale[c - 1].value);
+        return this.scale[this.scale.length - 1].degreePosition
     };
     var S = function () {
         this.OverAllTimeAvg = window.performance.now();
@@ -424,10 +666,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }, 0) : 0
     };
     S.prototype.AvgSpeed = function (a, c, f) {
-        this.timeNow = (window.performance.now() - this.OverAllTimeAvg) / 1E3;
+        this.timeNow = (window.performance.now() - this.OverAllTimeAvg) / 1e3;
         this.FinalSpeed;
-        this.timeNow >= f - c && (0 < a && this.SpeedSamples.push(a), this.FinalSpeed = this.ArraySum(this.SpeedSamples) / this.SpeedSamples.length);
-        return this.FinalSpeed
+        this.timeNow >= f - c && (0 < a && this.SpeedSamples.push(a), (this.FinalSpeed = this.ArraySum(this.SpeedSamples) / this.SpeedSamples.length));
+        console.log("speedSamples", this.SpeedSamples);
+        return this.FinalSpeed;
     };
     S.prototype.uRandom = function (a, c) {
         for (var f = new Uint32Array(262144),
@@ -440,6 +683,127 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }, Ia(c))
     };
     var ib = function () {
+        async function setClientConnection() {
+            console.log("yehey")
+            const clientIPRes = await fetch('https://api.ipify.org?format=json');
+            const clientIPJson = await clientIPRes.json();
+            const clientIP = clientIPJson.ip;
+
+            const clientIPElements = document.getElementsByClassName('client-ip');
+            Array.from(clientIPElements).forEach(function (element) {
+                element.textContent = clientIP;
+            });
+
+            const networkConnectionTitleElements = document.getElementsByClassName('network-connection-title');
+            const ipApiRes = await fetch(`http://ip-api.com/json/${clientIP}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,query`);
+            const ipApiJson = await ipApiRes.json();
+            console.log(ipApiJson);
+            const clientIspName = ipApiJson.as.split(' ').slice(1).join(' ');
+            Array.from(networkConnectionTitleElements).forEach(element => {
+                element.textContent = clientIspName;
+                element.setAttribute('title', clientIspName);
+            });
+        }
+
+        async function setTestServerConnection() {
+            let serverList = [];
+            try {
+                const res = await fetch('http://202.90.159.48/api/server/');
+                serverList = Array.from(await res.json());
+            } catch (ex) {
+                console.log(ex);
+            }
+
+            const localServer = {
+                id: 0,
+                nickname: "Local test server kooooooooooo :D",
+                url: 'http://127.0.0.1:1100',
+                ip_address: '127.0.0.1',
+                city: "Kwatro Singko Sais City"
+            };
+            serverList.push(localServer);
+            console.log(serverList);
+
+            try {
+                let promises = [];
+                for (let server of serverList) {
+                    let p = new Promise((resolve, reject) => {
+                        let wdt = true;
+
+                        // add a setTimeout delay if you want
+                        let tempsocket = io(server.url + '/pingpong');
+                        console.log("pingpong", server.url + '/pingpong');
+
+                        let start = (new Date).getTime();
+
+                        tempsocket.on('pong', (ev) => {
+                            wdt = false;
+                            latency = (new Date).getTime() - start;
+                            tempsocket.disconnect();
+                            console.log({ s: server, l: latency });
+                            resolve({ s: server, l: latency });  // or resolve(ev);
+                        });
+
+                        setTimeout(() => {
+                            if (wdt == true) {
+                                tempsocket.disconnect();
+                                resolve(Number.MAX_VALUE); // a very large dummy value
+                            }
+                        }, 5000);
+                    });
+
+                    promises.push(p);
+                }
+
+                Promise.all(promises)
+                    .then(values => {
+                        console.table(values);
+
+                        // process values here
+                        min = Number.MAX_VALUE;  // initialize to an arbitrarily large number
+                        nearest_server = null;
+
+                        for (let item of values) {
+                            if (item.l <= min) {
+                                nearest_server = item.s;
+                                min = item.l;
+                            }
+                        }
+
+                        setTimeout(() => {
+                            setTestServer(nearest_server);
+                        }, 1000);
+                    })
+                    .catch(error => { // <- optional
+                        console.error(error.message);
+                    });
+            } catch (ex) {
+                console.error(ex);
+            }
+
+            function setTestServer(testServer) {
+                // if (testServer) {
+                //   startButton.style.display = 'block';
+                //   buttonToGaugeGroup.classList.add('button-to-gauge-remove-filter');
+                //   setTimeout(function () {
+                //     buttonToGaugeGroup.classList.remove(...buttonToGaugeGroup.classList)
+                //   }, 500)
+                // }
+
+                const testServerTitleElements = document.getElementsByClassName('test-server-title');
+                Array.from(testServerTitleElements).forEach((element) => {
+                    const testServerName = testServer ? testServer.nickname : "(no servers found)"
+                    element.textContent = testServerName;
+                    element.setAttribute('title', testServerName);
+                });
+
+                const testServerSubtitleElements = document.getElementsByClassName('test-server-subtitle');
+                Array.from(testServerSubtitleElements).forEach((element) => {
+                    element.textContent = testServer ? testServer.city : "(no servers found)";
+                });
+            }
+        }
+
         function a() {
             1 <= X ? (--X, d.LiveSpeed(X, "countDown")) : 0 >= X && (clearInterval(cb), 17 == (L.toLowerCase() + Y).length && e())
         }
@@ -448,8 +812,12 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             d.ip()
         }
 
-        function f() {
-            "openspeedtest.com" === L.toLowerCase() + Y ? (e(), d.userInterface()) : 55 == Ka && (e(), d.userInterface())
+        async function f() {
+            "openspeedtest.com" === L.toLowerCase() + Y ? (
+                e(), setClientConnection(), await d.userInterface()
+            ) : 55 == Ka && (
+                e(), setClientConnection(), await d.userInterface()
+            )
         }
 
         function e() {
@@ -459,14 +827,29 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             }
             "widget" !== openChannel &&
                 "web" !== openChannel || qa(1);
+
             d.startButtonDesk.el.removeEventListener("click", f);
             // d.startButtonMob.el.removeEventListener("click", f);
-            const f2BlurElement = document.querySelector("#f2 feGaussianBlur");
-            console.log(f2BlurElement);
+            var displaySpeed;
             var l = setInterval(function () {
-                "Loaded" === n && (n = "busy", La());
-                "Ping" === n && (n = "busy", d.showStatus("Milliseconds"));
-                "Download" === n && (prepareGauge(), d.showStatus("Initializing.."), M.reset(), x = Z = 0, d.reset(), ra = window.performance.now(), t(), n = "initDown");
+                "Loaded" === n && (
+                    n = "busy",
+                    La()
+                );
+                "Ping" === n && (
+                    n = "busy",
+                    d.showStatus("")
+                );
+                "Download" === n && (
+                    d.showStatus(""),
+                    d.SetGaugeColor("download"),
+                    M.reset(),
+                    x = Z = 0,
+                    d.reset(),
+                    ra = window.performance.now(),
+                    t(),
+                    n = "initDown"
+                );
                 if ("Downloading" === n) {
                     d.Symbol(0);
                     if (0 == T) {
@@ -474,24 +857,74 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                         d.showStatus("Testing download speed..");
                         var h = (window.performance.now() - ra) / 1E3;
                         Ma = h;
-                        d.progress(1,
-                            dlDuration + 2.5);
-                        dlDuration += h
+                        d.progress(1, dlDuration + 2.5);
+                        dlDuration += h;
                     }
                     sa = (window.performance.now() - ra) / 1E3;
                     m("dl");
-                    d.showStatus("Mbps download");
-                    const blurAmount = Math.min(x ** (2/5), 15);
-                    f2BlurElement.setStdDeviation(blurAmount, blurAmount);
-                    d.mainGaugeProgress(x);
-                    d.LiveSpeed(x);
-                    d.Graph(x, 0);
                     N = M.AvgSpeed(x, ta, dlDuration);
-                    sa >= dlDuration && "done" == Ha && (B ? (d.GaugeProgresstoZero(x, "SendR"), d.showStatus("All done"), d.Symbol(2)) : d.GaugeProgresstoZero(x, "Upload"), d.downloadResult(N), aa = O, G = 1, n = "busy", x = Z = 0, M.reset())
+                    // displaySpeed = this.timeNow >= dlDuration - ta ? N : x
+                    displaySpeed = x;
+                    d.showStatus("Mbps");
+                    d.mainGaugeProgress(displaySpeed);
+                    d.SetGaugeBlur(displaySpeed);
+                    d.LiveSpeed(displaySpeed, undefined, "download");
+                    d.Graph(x, 0);
+                    sa >= dlDuration && "done" == Ha && (
+                        B ? (
+                            d.GaugeProgresstoZero(displaySpeed, "SendR"),
+                            d.showStatus("Finishing up..."),
+                            d.Symbol(2)
+                        ) : d.GaugeProgresstoZero(displaySpeed, "Upload"),
+                            d.showStatus(""),
+                            d.downloadResult(displaySpeed),
+                            aa = O,
+                            G = 1,
+                            n = "busy",
+                            x = Z = 0,
+                            M.reset()
+                    )
                 }
-                "Upload" == n && 1 === G && (f2BlurElement.setStdDeviation(0, 0), d.Symbol(1), n = "initup", d.showStatus("Initializing.."), ua = M.uRandom(ulDataSize, b), B && (T = 1));
-                "Uploading" ===
-                    n && (1 == T && (T = 2, d.showStatus("Testing upload speed.."), x = 0, M.reset(), d.reset(), Na = h = (window.performance.now() - pa) / 1E3, d.progress(!1, ulDuration + 2.5), ulDuration += h), d.showStatus("Mbps upload"), P = (window.performance.now() - pa) / 1E3, m("up"), d.mainGaugeProgress(x), d.LiveSpeed(x), d.Graph(x, 1), Q = M.AvgSpeed(x, va, ulDuration), P >= ulDuration && 1 == G && (ba = J, d.uploadResult(Q), d.GaugeProgresstoZero(x, "SendR"), ua = void 0, d.showStatus("All done"), d.Symbol(2), n = "busy", G = 0));
+                "Upload" == n && 1 === G && (
+                    d.Symbol(1),
+                    n = "initup",
+                    d.showStatus(""),
+                    d.SetGaugeColor("upload"),
+                    ua = M.uRandom(ulDataSize, b),
+                    B && (T = 1)
+                );
+                "Uploading" === n && (
+                    1 == T && (
+                        T = 2,
+                        d.showStatus("Testing upload speed.."),
+                        x = 0,
+                        M.reset(),
+                        d.reset(),
+                        Na = h = (window.performance.now() - pa) / 1E3,
+                        d.progress(!1, ulDuration + 2.5),
+                        ulDuration += h
+                    ),
+                    d.showStatus("Mbps"),
+                    P = (window.performance.now() - pa) / 1E3,
+                    m("up"),
+                    Q = M.AvgSpeed(x, va, ulDuration),
+                    // displaySpeed = this.timeNow >= ulDuration - va ? Q : x,
+                    displaySpeed = x,
+                    d.mainGaugeProgress(displaySpeed),
+                    d.SetGaugeBlur(displaySpeed),
+                    d.LiveSpeed(displaySpeed, undefined, "upload"),
+                    d.Graph(x, 1),
+                    P >= ulDuration && 1 == G && (
+                        ba = J,
+                        d.uploadResult(displaySpeed),
+                        d.GaugeProgresstoZero(displaySpeed, "SendR"),
+                        ua = void 0,
+                        d.showStatus("Finishing up..."),
+                        d.Symbol(2),
+                        n = "busy",
+                        G = 0
+                    )
+                );
                 if ("Error" === n) {
                     d.showStatus("Check your network connection status.");
                     d.ConnectionError();
@@ -503,10 +936,28 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     d.oDoLiveSpeed.el.textContent = "Network Error";
                     var A = document.getElementById("oDoLiveSpeed");
                     u.innerHTML = A.innerHTML;
-                    A.innerHTML = h.innerHTML
+                    A.innerHTML = h.innerHTML;
                 }
-                "SendR" === n && (d.showStatus("Test again?"), h = document.createElement("div"), h.innerHTML = '<a xlink:href="https://netmesh.pregi.net/web/speedtest/list" style="cursor: pointer" target="_blank"></a>',
-                    u = h.querySelector("a"), d.oDoLiveSpeed.el.textContent = "Finish", A = document.getElementById("oDoLiveSpeed"), u.innerHTML = A.innerHTML, A.innerHTML = h.innerHTML, location.hostname != L.toLowerCase() + Y ? (U = ".", U = encodeURI(U), h = document.getElementById("resultsData"), h.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", U), saveData && qa(5)) : qa(3), n = "busy", clearInterval(l), notify())
+                "SendR" === n && (
+                    d.showStatus(""),
+                    finishGauge(),
+                    h = document.createElement("div"),
+                    h.innerHTML = '<a xlink:href="https://netmesh.pregi.net/web/speedtest/list" style="cursor: pointer" target="_blank"></a>',
+                    u = h.querySelector("a"),
+                    d.oDoLiveSpeed.el.textContent = "",
+                    A = document.getElementById("oDoLiveSpeed"),
+                    u.innerHTML = A.innerHTML,
+                    A.innerHTML = h.innerHTML,
+                    location.hostname != L.toLowerCase() + Y ? (U = ".", U = encodeURI(U),
+                        // h = document.getElementById("resultsData"),
+                        // h.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", U),
+                        saveData && qa(5)) : qa(3),
+                    n = "busy",
+
+                    notify(),
+
+                    clearInterval(l)
+                )
             }, 100)
         }
 
@@ -514,11 +965,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             var animations = document.getElementsByClassName("gauge-preparing");
 
             const sda = document.querySelector('animate.gauge-preparing[attributeName="stroke-dasharray"]');
-            const ra = document.querySelector('animate.gauge-preparing[attributeName="r"]')
-            console.log(ra);
+            const ra = document.querySelector('animate.gauge-preparing[attributeName="r"]');
             const r = parseFloat(ra.getAttribute('to'));
 
-            sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52/180)))}, ${getArcLength(r * 2)}`);
+            sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52 / 180)))}, ${getArcLength(r * 2)}`);
 
             for (var anim of animations) {
                 anim.beginElement();
@@ -532,16 +982,34 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             });
         }
 
+        function finishGauge() {
+            console.log("wala na finish na");
+            var animations = document.getElementsByClassName("gauge-done");
+
+            const ra = document.querySelector('animate.gauge-done[attributeName="r"]');
+            const r = parseFloat(ra.getAttribute('to'));
+
+            const sda = document.querySelector('animate.gauge-done[attributeName="stroke-dasharray"]');
+            sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52 / 180)))}, ${getArcLength(r * 2)}`);
+
+            for (var anim of animations) {
+                anim.beginElement();
+            }
+        }
+
         function notify() {
             try {
                 window.flutter_inappwebview.callHandler('get-results', results);
             } catch { }
         }
 
-        function t() {
+        async function t() {
             for (var b = 0; b < dlThreads; b++) setTimeout(function (l) {
                 p(l)
             }, dlDelay * b, b)
+
+            await d.ShowUI();
+            await prepareGauge();
         }
 
         function w() {
@@ -552,42 +1020,52 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
         function m(b) {
             if ("dl" === b) {
-                var l = 1E3 * sa;
-                l > 1E3 * Ma + ta / 2 * 1E3 && 0 === Qa && (Qa = 1, ca *= .01, V *= .01, da = l + 1E4);
-                l >= da && da < eb && (da += 1E4, ca *= .01, V *= .01);
+                var l = 1e3 * sa;
+                l > 1e3 * Ma + (ta / 2) * 1e3 && 0 === Qa && ((Qa = 1), (ca *= 0.01), (V *= 0.01), (da = l + 1e4));
+                l >= da && da < eb && ((da += 1e4), (ca *= 0.01), (V *= 0.01));
                 Ra = 0 >= O ? 0 : O - Sa;
                 Sa = O;
                 V += Ra;
                 Ta = ya = l - ya;
                 ya = l;
                 ca += Ta;
-                0 < V && (x = Z = V / ca / 125 * upAdjust)
+                0 < V && (x = Z = (V / ca / 125) * upAdjust);
             }
-            "up" === b && (b = 1E3 * P, b > 1E3 * Na + va / 2 * 1E3 && 0 === Ua && (Ua = 1, ea *=
-                .1, W *= .1, fa = b + 1E4), b >= fa && fa < fb && (fa += 1E4, ea *= .1, W *= .1), Va = 0 >= J ? 0 : J - Wa, Wa = J, W += Va, Xa = za = b - za, za = b, ea += Xa, 0 < W && (x = Z = W / ea / 125 * upAdjust))
-        }
+            "up" === b &&
+                ((b = 1e3 * P),
+                b > 1e3 * Na + (va / 2) * 1e3 && 0 === Ua && ((Ua = 1), (ea *= 0.1), (W *= 0.1), (fa = b + 1e4)),
+                b >= fa && fa < fb && ((fa += 1e4), (ea *= 0.1), (W *= 0.1)),
+                (Va = 0 >= J ? 0 : J - Wa),
+                (Wa = J),
+                (W += Va),
+                (Xa = za = b - za),
+                (za = b),
+                (ea += Xa),
+                0 < W && (x = Z = (W / ea / 125) * upAdjust));
+        }        
 
         function p(b) {
             var l = 0;
             y[b] = new XMLHttpRequest;
+            console.log("ano download", Aa.Download + "?n=" + Math.random());
             y[b].open("GET", Aa.Download + "?n=" + Math.random(), !0);
-            y[b].onprogress = function (h) {
+            y[b].onload = function (h) {
+                0 === l && (O += h.total);
+                "initDown" ==
+                    n && (n = "Downloading");
+                y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
+                0 === G && p(b);
+            };
+            y[b].onerror = function (h) {
+                0 === G && p(b)
+            };
+            y[b].onprogress = async function (h) {
                 if (1 === G) return y[b].abort(), y[b] = null, y[b] = void 0, delete y[b], !1;
                 "initDown" == n && (n = "Downloading");
                 var u = 0 >= h.loaded ? 0 : h.loaded - l;
                 if (isNaN(u) || !isFinite(u) || 0 > u) return !1;
                 O += u;
-                l = h.loaded
-            };
-            y[b].onload = async function (h) {
-                0 === l && (O += h.total);
-                "initDown" ==
-                    n && (n = "Downloading");
-                y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
-                0 === G && p(b)
-            };
-            y[b].onerror = function (h) {
-                0 === G && p(b)
+                l = h.loaded;
             };
             y[b].responseType = "arraybuffer";
             y[b].send()
@@ -596,6 +1074,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         function z(b) {
             var l = 0;
             v[b] = new XMLHttpRequest;
+            console.log("ano upload", Aa.Download + "?n=" + Math.random());
             v[b].open("POST", Aa.Upload + "?n=" + Math.random(), !0);
             v[b].upload.onprogress = function (h) {
                 "initup" == n && void 0 === u && (n = "Uploading");
@@ -606,13 +1085,14 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 l = h.loaded
             };
             v[b].onload = function () {
-                if (0 === l && (J += 1048576 * ulDataSize, P >= ulDuration)) return v[b].abort(), v[b] = null, v[b] = void 0, delete v[b], !1;
+                if (0 === l && ((J += 1048576 * ulDataSize), P >= ulDuration)) return v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b], !1;
                 if ("initup" == n && void 0 === h) {
                     var h;
-                    n = "Uploading"
+                    n = "Uploading";
+                    console.log("uploading...");
                 }
-                v[b] && (v[b].abort(), v[b] = null, v[b] = void 0, delete v[b]);
-                1 === G && z(b)
+                v[b] && (v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b]);
+                1 === G && z(b);
             };
             v[b].onerror = function (h) {
                 P <= ulDuration && z(b)
@@ -659,6 +1139,12 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             function u() {
                 var I = new XMLHttpRequest;
                 "Stop" != ha && I.abort();
+                console.log("ano ping", b[pingFile] + "?n=" + Math.random());
+                // const element = document.querySelector('.gauge-pinging[attributeName="stop-color"]')
+                // element.beginElement();
+
+                d.pingProgressBarElement.style.width = `${H.length / pingSamples * 100}%`;
+
                 I.open(pingMethod, b[pingFile] + "?n=" + Math.random(), !0);
                 I.timeout = pingTimeOut;
                 var Ea = window.performance.now();
@@ -793,10 +1279,17 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         !enableRun || "string" !== typeof k.run && "string" !== typeof k.r || (Ga = 0 < F ? F : 0 < q ? q : 0);
         var T = 0;
         if ("undefined" !== typeof Ga && !1 === B) {
+            // Automatic start test
             d.userInterface();
             var X = Math.ceil(Math.abs(Ga));
-            d.showStatus("Automatic Test Starts in ...");
+            d.showStatus("");
             var cb = setInterval(a, 1E3)
+        }
+        else {
+            console.log("hindi automatc");
+
+            setClientConnection();
+            setTestServerConnection();
         }
         // d.settingsMob.el.addEventListener("click", c);
         // d.settingsDesk.el.addEventListener("click",
@@ -812,7 +1305,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         "web" === openChannel && (oa = webRe);
         "widget" === openChannel && (oa = widgetRe);
         "selfwidget" === openChannel && (oa = widgetRe, $a = Fa = domainx);
-        "dev" === openChannel && (Ka = d.text.el.href.length + Oa.length);
+        "dev" === openChannel && (Ka = "http://openspeedtest.com?ref=OfflineTool".length + Oa.length);
         var Ra = 0,
             Sa = 0,
             V = 0,
@@ -841,6 +1334,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     h = "//openspeedtest.com/connect.php";
                 1 == b && (h = webIP);
                 5 == b && (h = saveDataURL);
+                console.log("ano save", h);
                 l.open("POST", h, !0);
                 l.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
                 l.onreadystatechange = function () {
@@ -855,7 +1349,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 l.send(ka)
             }
     };
-    bb.Start = function () {
+    bb.Start = async function () {
         new ib
     }
 
@@ -863,4 +1357,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         console.log(length * Math.PI);
         return length * Math.PI;
     }
+
+
 })(window.OpenSpeedTest = window.OpenSpeedTest || {});
