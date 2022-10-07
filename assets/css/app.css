@@ -92,7 +92,9 @@ body {
   z-index: -1000;
 } */
 
+
 .openSpeedtestApp {
+  font-family: Ubuntu;
   height: 100vh;
   width: 100vw;
   display: none;
@@ -105,17 +107,16 @@ body {
   flex-direction: column;
   min-width: 225px;
   min-height: 400px;
-  font-family: Ubuntu;
 }
 
 .text-one-line-only {
   text-overflow: ellipsis;
-  word-break: break-all;
+  word-break: normal;
   overflow: hidden;
   max-width: 1080px;
   display: -webkit-box;
-  -webkit-line-clamp: 1; /* number of lines to show */
-          line-clamp: 1;
+  -webkit-line-clamp: 4; /* number of lines to show */
+          line-clamp: 4;
   -webkit-box-orient: vertical;
 }
 
@@ -144,8 +145,10 @@ body {
   opacity: 1;
 }
 
-#startButtonDesk {
+#startButtonDesk:active {
   /* display: none; */
+  outline: none;
+  fill: var(--modal-background-color);
 }
 #button-to-gauge-group.hover {
   filter: drop-shadow(0rem 0rem 0.25rem var(--gauge-background-color)) brightness(1.2);
@@ -187,12 +190,14 @@ body {
 .speed-connection-progress-names .network-connection-title {
   color: var(--secondary-color);
   font-size: max(12px, 2.25vh);
-  margin-right: 8px;
+  margin-right: 12px;
+  text-align: start;
 }
 .speed-connection-progress-names .test-server-title {
   color: var(--secondary-color);
   font-size: max(12px, 2.25vh);
-  margin-left: 8px;
+  margin-left: 12px;
+  text-align: end;
 }
 .speed-connection-progress-panel .bar {
   flex: 1;
@@ -353,6 +358,17 @@ body {
   cursor: pointer;
 }
 
+#otherResultsPanel {
+  flex: 3;
+  display: flex;
+  justify-content: center;
+  visibility: hidden;
+}
+
+#otherResultsPanel > div {
+
+}
+
 @media screen and (max-height: 599px) {
   .network-connection-icon {
     width: 16px;
@@ -396,7 +412,7 @@ body {
     background-color: blue;
   }
   .speedtestApp {
-    flex-direction: row;
+    flex-direction: column;
   }
   .network-connection-panel {
     align-items: end;
@@ -407,6 +423,7 @@ body {
     justify-content: center;
   }
 } */
+
 
 .main-gauge-circle {
 }

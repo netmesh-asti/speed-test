@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-<html class="light-theme">
+<html class="dark-theme">
 <head>
   <title>NetMesh Web Speedtest</title>
 
@@ -155,90 +155,97 @@
 
   </div>
   <div id="OpenSpeedtest" class="openSpeedtestApp">
-    <div class="speedtestApp">
-      <div id="measuringScreenPanel" class="measuring-screen">
-        <div class="speed-results-panel-container">
-          <div class="speed-results-panel">
-            <div class="speed-results-column">
-              <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
-                <defs>
-                  <symbol id="graphc1" fill="var(--secondary-color)" stroke="var(--secondary-color)" stroke-width="1">
-                    <path class="line" />
-                  </symbol>
-                </defs>
-                <use xlink:href="#graphc1" x="0" y="0" /> 
-              </svg>
-              <div id="downResult" class="speed-value">---</div>
-              <div>
-                <span class="speed-unit">Mbps</span>
-                <span class="speed-label">&nbsp;DOWNLOAD</span>
-              </div>
-              <div class="ping-jitter-container">
-                <span class="speed-response-label">Ping</span>
-                <span id="pingResult" class="ping-jitter-value">---</span>
-                <span class="speed-response-unit">&nbsp;ms</span>
-              </div>
+    
+    <div id="measuringScreenPanel" class="measuring-screen">
+      <div id="speedResultsPanel" class="speed-results-panel-container">
+        <div class="speed-results-panel">
+          <div class="speed-results-column">
+            <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
+              <defs>
+                <symbol id="graphc1" fill="var(--secondary-color)" stroke="var(--secondary-color)" stroke-width="1" opacity="0.88">
+                  <path class="line" />
+                </symbol>
+              </defs>
+              <use xlink:href="#graphc1" x="0" y="0" /> 
+            </svg>
+            <div id="downResult" class="speed-value">---</div>
+            <div>
+              <span class="speed-unit">Mbps</span>
+              <span class="speed-label">&nbsp;DOWNLOAD</span>
             </div>
-            <div class="speed-results-column">
-              <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
-                <defs>
-                  <symbol fill="var(--secondary-color)" stroke="var(--secondary-color)" id="graphc2" stroke-width="1">
-                    <!-- d="M 0,50 L 0,25 M 1,50 L 1,33 M 2,50 L 2,0 M 3,50 L 3,39 M 128,50 L 128,49 M 129,50 L 129,18 M 130,50 L 130,0" -->
-                    <path class="line2" d=""/>
-                  </symbol>
-                </defs>
-                <use xlink:href="#graphc2" x="0" y="0">
-                </use>
-              </svg>
-              <div id="upRestxt" class="speed-value">---</div><div>
-                <span class="speed-unit">Mbps</span>
-                <span class="speed-label">&nbsp;UPLOAD</span>
-              </div>
-              <div class="ping-jitter-container">
-                <span class="speed-response-label">Jitter</span>
-                <span id="jitterDesk" class="ping-jitter-value">---</span>
-                <span class="speed-response-unit">&nbsp;ms</span>
-              </div>
+            <div class="ping-jitter-container">
+              <span class="speed-response-label">Ping</span>
+              <span id="pingResult" class="ping-jitter-value">---</span>
+              <span class="speed-response-unit">&nbsp;ms</span>
             </div>
           </div>
-        </div>
-        <div style="flex: 3;">
-          
-        </div>
-        <div class="speed-connection-progress-panel-container">
-          <div id="progressBarPanel">
-            <div class="speed-connection-progress-panel">
-              <svg width="30" height="30">
-                <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
-                <use xlink:href="#wifi-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
-              </svg>
-              <div class="bar"></div>
-              <svg width="30" height="30">
-                <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
-                <use xlink:href="#test-server-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
-              </svg>
+          <div class="speed-results-column">
+            <svg class="speed-graph-panel" width="100%" height="20%" viewBox="0,0,130,50">
+              <defs>
+                <symbol fill="var(--secondary-color)" stroke="var(--secondary-color)" id="graphc2" stroke-width="1" opacity="0.88">
+                  <!-- d="M 0,50 L 0,25 M 1,50 L 1,33 M 2,50 L 2,0 M 3,50 L 3,39 M 128,50 L 128,49 M 129,50 L 129,18 M 130,50 L 130,0" -->
+                  <path class="line2" d=""/>
+                </symbol>
+              </defs>
+              <use xlink:href="#graphc2" x="0" y="0">
+              </use>
+            </svg>
+            <div id="upRestxt" class="speed-value">---</div><div>
+              <span class="speed-unit">Mbps</span>
+              <span class="speed-label">&nbsp;UPLOAD</span>
             </div>
-            <div style="position: relative; max-width: 1080px; width: calc(100% - 60px);" >
-              <div id="pingProgressBar" class="ping-progress-bar"></div>
-              <div id="downloadTestProgressBar" class="download-progress-bar"></div>
-              <div id="uploadTestProgressBar" class="upload-progress-bar"></div>
-            </div>
-            <div class="speed-connection-progress-names">
-              <span class="network-connection-title text-one-line-only" title="">
-                ---
-              </span>
-              <span class="test-server-title text-one-line-only" title="">
-                ---
-              </span>
+            <div class="ping-jitter-container">
+              <span class="speed-response-label">Jitter</span>
+              <span id="jitterDesk" class="ping-jitter-value">---</span>
+              <span class="speed-response-unit">&nbsp;ms</span>
             </div>
           </div>
         </div>
       </div>
+      <div id="otherResultsPanel">
+        <div>
+          <button id="btnTestAgain" type="button" class="btn btn-primary">Test again</button>
+          <button id="btnBackToHome" type="button" class="btn btn-secondary">Back</button>
+        </div>
+      </div>
+      <div class="speed-connection-progress-panel-container">
+        <div id="progressBarPanel">
+          <div class="speed-connection-progress-panel">
+            <svg width="30" height="30">
+              <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
+              <use xlink:href="#wifi-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
+            </svg>
+            <div class="bar"></div>
+            <svg width="30" height="30">
+              <circle r="14.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
+              <use xlink:href="#test-server-icon" width="19" height="19" x="5.5" y="5.5" style="fill: var(--secondary-color);"></use>
+            </svg>
+          </div>
+          <div style="position: relative; max-width: 1080px; width: calc(100% - 60px);" >
+            <div id="pingProgressBar" class="ping-progress-bar"></div>
+            <div id="downloadTestProgressBar" class="download-progress-bar"></div>
+            <div id="uploadTestProgressBar" class="upload-progress-bar"></div>
+          </div>
+          <div class="speed-connection-progress-names">
+            <span class="network-connection-title text-one-line-only" title="">
+              ---
+            </span>
+            <span class="test-server-title text-one-line-only" title="">
+              ---
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="homePanel" class="speedtestApp">
       <div id="networkConnectionPanel" class="network-connection-panel">
-        <svg width="32" height="32">
+        <svg width="32" height="32" style="margin-bottom: 0.5rem;">
           <circle r="15.5" fill="none" cx="50%" cy="50%" style="stroke: var(--secondary-color);"/>
           <use xlink:href="#wifi-icon" width="20" height="20" x="6" y="6" style="fill: var(--secondary-color);"></use>
         </svg>
+        <span class="text-secondary" style="font-size: max(0.75rem, 1.8vh);">
+          Your ISP
+        </span>
         <span class="network-connection-title text-one-line-only" title="">
           ---
         </span>
@@ -465,7 +472,7 @@
               <line x1="5" y1="5" x2="405" y2="5"></line>
             </symbol> -->
         
-            <symbol id="ConnectError" viewBox="0 0 489.6 489.6">
+            <!-- <symbol id="ConnectError" viewBox="0 0 489.6 489.6">
               <a target="_blank" href="https://openspeedtest.com/FAQ.php?ref=NetworkError">
                 <g>
                   <g>
@@ -482,7 +489,7 @@
                 </g>
                 <title>Network Error</title>
               </a>
-            </symbol>
+            </symbol> -->
         
             <!-- <symbol class="Your-IP" viewBox="0 0 300 299.12">
               <text id="YourIP" transform="translate(140 228) scale(.3 1)">Powered by OpenSpeedtest.com!</text>
@@ -724,6 +731,7 @@
               />
               <!-- 4. SPEED TEST DONE -->
               <animate
+                id="gauge-done-stroke-width"
                 class="gauge-done"
                 begin="indefinite"
                 attributeName="stroke-width"
@@ -758,13 +766,13 @@
             </circle>
           </g>
           <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" viewBox="0 0 316 316"/>
-          <a href="#" id="startButtonDesk" cursor="pointer">
+          <a id="startButtonDesk" cursor="pointer">
             <circle r="84" cx="158" cy="158" fill="transparent">
               <animate begin="indefinite" class="gauge-connecting" attributeName="display" to="none" fill="freeze" />
             </circle>
           </a>
-          <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"
-            height="41.62"></use>
+          <!-- <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"
+            height="41.62"></use> -->
 
           <!-- <text
             x="50%"
@@ -799,7 +807,7 @@
       <div id="testServerPanel" class="test-server-panel">
         <span class="test-server-title text-one-line-only" title="">(finding a test server...)</span>
         <span class="test-server-subtitle text-one-line-only">---</span>
-        <button type="button" class="btn btn-primary" style="margin: 16px;">Change test server</button>
+        <button id="change-test-server-button" type="button" class="btn btn-secondary">Change test server</button>
       </div>
     </div>
   </div>
@@ -815,7 +823,7 @@
   <!-- The Modal -->
   <div id="network-error-modal" class="modal">
     <!-- Modal content -->
-    <div class="modal-content">
+    <div class="modal-content center">
       <div class="modal-header">
         <!-- <span class="close">&times;</span> -->
         <h2 class="modal-title text-danger">Network Error</h2>
@@ -827,6 +835,31 @@
       </div>
       <div class="modal-footer">
         <button type="button" id="try-again-button" class="btn btn-primary">Try again</button>
+      </div>
+    </div>
+  </div>
+
+
+  <div id="test-servers-modal" class="modal">
+    <!-- Modal content -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <!-- <span class="close">&times;</span> -->
+        <h2 class="modal-title text-primary">Test Servers</h2>
+      </div>
+      <div class="modal-body">
+        <div class="select-list">
+          <select id="test-servers-select" size="7" class="stretch">
+            <!-- <option value="">Wait lang friend</option>
+            <option value="">Forda speed test ang ferson</option>
+            <option value="">For today's bidyowww</option>
+            <option value="">Hindi OK yung UI sa IOS iyaaaaaaqqq</option> -->
+          </select>
+        </div>
+      </div>
+      <div class="modal-footer end">
+        <button type="button" id="select-test-server-button" class="btn btn-primary">Select</button>
+        <button type="button" id="cancel-test-server-button" class="btn btn-secondary">Cancel</button>
       </div>
     </div>
   </div>
