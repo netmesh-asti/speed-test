@@ -266,9 +266,11 @@
             fill="freeze"
           />
           <defs>
+            <!-- (radius + cos(104)*radius) / 316  -->
+            <!-- (radius + sin(-76)*radius) / 316  -->
             <radialGradient id="download-speed-gradient"
-              cx="calc((158 + -0.241921896 * 158) / 316)"
-              cy="calc((158 + -0.970295726 * 158) / 316)"
+              cx="0.379039052"
+              cy="0.014852137"
               r="1.5">
               <stop class="max-speed-gradient-stop" offset="5%" stop-color="#1ca561" />
               <stop offset="25%" stop-color="#1C60A5" />
@@ -276,8 +278,8 @@
               <stop offset="100%" stop-color="#52A0EE" />
             </radialGradient>
             <radialGradient id="upload-speed-gradient"
-              cx="calc((158 + -0.241921896 * 158) / 316)"
-              cy="calc((158 + -0.970295726 * 158) / 316)"
+              cx="0.379039052"
+              cy="0.014852137"
               r="1.5">
               <stop class="max-speed-gradient-stop" offset="5%" stop-color="#1ca561" />
               <stop offset="25%" stop-color="#6D4EA1" />
@@ -304,6 +306,7 @@
                   <feBlend in="SourceGraphic" in2="blurOut" mode="multiply" />
                 </filter>
               </defs>
+              <!-- stroke-dasharray = 3.1416 * r*2 * (1 - (kalahatingBuka / 180)), 3.1416 * r*2 -->
               <circle
                 id="gauge-circle"
                 r="120"
@@ -312,7 +315,7 @@
                 filter="url(#f2)"
                 stroke="url(#download-speed-gradient)"
                 stroke-width="16"
-                stroke-dasharray="calc(3.1416 * 120 * 2 * (1 - (52/180))) calc(3.1416 * 120 * 2)"
+                stroke-dasharray="536.1664 753.984"
                 transform="rotate(142, 158, 158)"
                 fill="transparent"
               >
@@ -548,14 +551,7 @@
           
           <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" viewBox="0 0 316 316"/>
           <use id="mainGaugeWhite-Desk" class="main-GaugeWhite" xlink:href="#mainGaugeWhite" viewBox="0 0 316 316"/>
-          <use xlink:href="#oDoMeter" class="oDo-Meter" viewBox="0 0 316 316" display="none">
-            <animate
-              class="gauge-preparing"
-              begin="indefinite"
-              attributeName="display"
-              to="block"
-              fill="freeze"
-            />
+          <use xlink:href="#oDoMeter" class="oDo-Meter" viewBox="0 0 316 316" opacity="0">
             <animate
               class="gauge-preparing"
               begin="indefinite"
@@ -567,6 +563,14 @@
               to="1"
               fill="freeze"
             />
+            <!-- <animate
+              class="gauge-preparing"
+              begin="indefinite"
+              attributeName="visibility"
+              to="visible"
+              dur="500ms"
+              fill="freeze"
+            /> -->
 
             <animate
               class="gauge-done"
@@ -612,6 +616,7 @@
               fill="transparent"
             >
             </circle> -->
+            <!-- stroke-dasharray="3.1416 * r*2, 3.1416 * r*2" -->
             <circle
               id="button-to-gauge"
               r="80"
@@ -619,7 +624,7 @@
               cy="158"
               stroke="url(#start-button-gradient)"
               stroke-width="8"
-              stroke-dasharray="calc(3.1416 * 160) calc(3.1416 * 160)"
+              stroke-dasharray="502.656 502.656"
               transform="rotate(142, 158, 158)"
               fill="transparent"
             >
@@ -768,7 +773,7 @@
           <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" viewBox="0 0 316 316"/>
           <a id="startButtonDesk" cursor="pointer">
             <circle r="84" cx="158" cy="158" fill="transparent">
-              <animate begin="indefinite" class="gauge-connecting" attributeName="display" to="none" fill="freeze" />
+              <animate begin="indefinite" class="gauge-connecting" attributeName="visibility" to="hidden" fill="freeze" />
             </circle>
           </a>
           <!-- <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"

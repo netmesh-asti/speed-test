@@ -14,11 +14,14 @@
   window.addEventListener('offline', (e) => { console.log('network-status', 'offline', e); });
   window.addEventListener('online', (e) => { console.log('network-status', 'online', e); });
 
-  const networkConnectionType = navigator.connection.type;
+  // const networkConnectionType = navigator.connection.type;
 
   const startButton = document.getElementById('startButtonDesk');
   const buttonToGaugeGroup = document.getElementById('button-to-gauge-group');
   
+  startButton.onclick = function (e) {
+    startButton.style.pointerEvents = 'none';
+  }
   startButton.onfocus = function (e) {
     startButton.onmouseenter(e);
   }

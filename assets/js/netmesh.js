@@ -302,16 +302,17 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         var animations = document.getElementsByClassName("gauge-starting");
         for (var anim of animations) {
             if (anim.id == "gauge-starting-rotate-anim") {
-                const w = window.getComputedStyle(mainGauge, null);
-                const t = w.getPropertyValue("transform");
+                // const w = window.getComputedStyle(mainGauge);
+                // const t = w.getPropertyValue("transform");
 
-                var values = t.split("(")[1];
-                values = values.split(")")[0];
-                values = values.split(",");
-                var a = values[0];
-                var b = values[1];
+                // var values = t.split("(")[1];
+                // values = values.split(")")[0];
+                // values = values.split(",");
+                // var a = values[0];
+                // var b = values[1];
+                const {a, b} = mainGauge.transform.baseVal.consolidate().matrix;
                 var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-                // console.log("angle", angle);
+                console.log("angle", angle);
                 anim.setAttribute(
                     "from",
                     `${angle >= 142 ? angle : angle + 360},158,158`
@@ -447,7 +448,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         var linearDegree = this.getLinearDegree(c);
         this.speedNeedle?.el?.setAttribute('transform', `rotate(${linearDegree}, 158, 158)`);
 
-        var adjustedMaxDegree = this.getScaleArcLength(0, 6) - 0.0001;
+        var adjustedMaxDegree = this.getScaleArcLength(0, this.scaleValues.length) - 0.0001;
         if (a > 0) {
             this.mainGaugeBlue_Desk.el.style.strokeOpacity = 1;
             this.mainGaugeWhite_Desk.el.style.strokeOpacity = 1;
@@ -474,6 +475,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1;
             this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
         }
+        console.log({f, });
     };
     r.prototype.showStatus = function (a) {
         this.oDoLiveStatus.el.textContent = a
