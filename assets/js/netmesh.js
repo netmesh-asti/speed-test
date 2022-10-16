@@ -698,112 +698,127 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }, Ia(c))
     };
     var ib = function () {
+        function timeout(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
         async function setClientConnection() {
             const clientIPRes = await fetch('https://api.ipify.org?format=json');
             const clientIPJson = await clientIPRes.json();
             const clientIP = clientIPJson.ip;
 
-            const clientIPElements = document.getElementsByClassName('client-ip');
-            Array.from(clientIPElements).forEach(function (element) {
-                element.textContent = clientIP;
+            await timeout(1000);
+
+            let clientIspName;
+            try {
+                const ipToAsnRes = await fetch(`https://ipapi.co/${clientIP}/json/`);
+                const ipToAsnJson = await ipToAsnRes.json();
+
+                clientIspName = ipToAsnJson.org;
+            } catch {
+                clientIspName = null;
+            }
+            
+            const networkConnectionTitleElements = document.getElementsByClassName('network-connection-title');
+            Array.from(networkConnectionTitleElements).forEach(element => {
+                element.textContent = clientIspName ?? clientIP;
+                element.setAttribute('title', element.textContent);
             });
 
-            const networkConnectionTitleElements = document.getElementsByClassName('network-connection-title');
-            const ipApiRes = await fetch(`http://ip-api.com/json/${clientIP}?fields=status,message,country,countryCode,region,regionName,city,zip,lat,lon,timezone,isp,org,as,asname,reverse,mobile,proxy,query`);
-            const ipApiJson = await ipApiRes.json();
-            // console.log(ipApiJson);
-            const clientIspName = ipApiJson.as.split(' ').slice(1).join(' ');
-            Array.from(networkConnectionTitleElements).forEach(element => {
-                element.textContent = clientIspName;
-                element.setAttribute('title', clientIspName);
+            const clientIPElements = document.getElementsByClassName('client-ip');
+            Array.from(clientIPElements).forEach(function (element) {
+                element.textContent = clientIspName ? clientIP : "";
             });
         }
 
         async function setTestServerConnection() {
             let serverList = [];
             try {
-                const res = await fetch('http://202.90.159.48/api/server/');
+                const res = await fetch('https://netmesh.pregi.net/portal/api/server/');
                 serverList = Array.from(await res.json());
-            } catch (ex) {
-                console.log(ex);
-            }
-
-            const localServer = {
-                id: 0,
-                nickname: "Local test server kooooooooooo :D",
-                url: 'http://127.0.0.1:1100',
-                ip_address: '127.0.0.1',
-                city: "Kwatro Singko Sais City"
-            };
-            serverList.push(localServer);
-            // console.log(serverList);
-
-            const testServersSelect = document.getElementById('test-servers-select');
-            const testServersSelectChildren = [];
-            for (const server of serverList) {
-                const serverOption = document.createElement('option');
-                serverOption.text = server.nickname;
-                serverOption.value = server.url;
-                testServersSelectChildren.push(serverOption);
-            }
-            testServersSelect.replaceChildren(...testServersSelectChildren);
-
-            try {
-                let promises = [];
-                for (let server of serverList) {
-                    let p = new Promise((resolve, reject) => {
-                        let wdt = true;
-
-                        // add a setTimeout delay if you want
-                        let tempsocket = io(server.url + '/pingpong');
-                        console.log("pingpong", server.url + '/pingpong');
-
-                        let start = (new Date).getTime();
-
-                        tempsocket.on('pong', (ev) => {
-                            wdt = false;
-                            latency = (new Date).getTime() - start;
-                            tempsocket.disconnect();
-                            console.log({ s: server, l: latency });
-                            resolve({ s: server, l: latency });  // or resolve(ev);
-                        });
-
-                        setTimeout(() => {
-                            if (wdt == true) {
-                                tempsocket.disconnect();
-                                resolve(Number.MAX_VALUE); // a very large dummy value
-                            }
-                        }, 5000);
-                    });
-
-                    promises.push(p);
-                }
-
-                Promise.all(promises)
-                    .then(values => {
-                        console.table(values);
-
-                        // process values here
-                        min = Number.MAX_VALUE;  // initialize to an arbitrarily large number
-                        nearest_server = null;
-
-                        for (let item of values) {
-                            if (item.l <= min) {
-                                nearest_server = item.s;
-                                min = item.l;
-                            }
-                        }
-
-                        setTimeout(() => {
-                            setTestServer(nearest_server);
-                        }, 1000);
-                    })
-                    .catch(error => { // <- optional
-                        console.error(error.message);
-                    });
             } catch (ex) {
                 console.error(ex);
             }
+
+            // const localServer = {
+            //     id: 0,
+            //     nickname: "Local test server kooooooooooo :D",
+            //     url: 'http://127.0.0.1:1100',
+            //     ip_address: '127.0.0.1',
+            //     city: "Kwatro Singko Sais City"
+            // };
+            // serverList.push(localServer);
+            // // console.log(serverList);
+
+            // const testServersSelect = document.getElementById('test-servers-select');
+            // const testServersSelectChildren = [];
+            // for (const server of serverList) {
+            //     const serverOption = document.createElement('option');
+            //     serverOption.text = server.nickname;
+            //     serverOption.value = server.url;
+            //     testServersSelectChildren.push(serverOption);
+            // }
+            // testServersSelect.replaceChildren(...testServersSelectChildren);
+
+            // try {
+            //     let promises = [];
+            //     for (let server of serverList) {
+            //         let p = new Promise((resolve, reject) => {
+            //             let wdt = true;
+
+            //             // add a setTimeout delay if you want
+            //             let tempsocket = io(server.url + '/pingpong');
+            //             console.log("pingpong", server.url + '/pingpong');
+
+            //             let start = (new Date).getTime();
+
+            //             tempsocket.on('pong', (ev) => {
+            //                 wdt = false;
+            //                 latency = (new Date).getTime() - start;
+            //                 tempsocket.disconnect();
+            //                 console.log({ s: server, l: latency });
+            //                 resolve({ s: server, l: latency });  // or resolve(ev);
+            //             });
+
+            //             setTimeout(() => {
+            //                 if (wdt == true) {
+            //                     tempsocket.disconnect();
+            //                     resolve(Number.MAX_VALUE); // a very large dummy value
+            //                 }
+            //             }, 5000);
+            //         });
+
+            //         promises.push(p);
+            //     }
+
+            //     Promise.all(promises)
+            //         .then(values => {
+            //             console.table(values);
+
+            //             // process values here
+            //             min = Number.MAX_VALUE;  // initialize to an arbitrarily large number
+            //             nearest_server = null;
+
+            //             for (let item of values) {
+            //                 if (item.l <= min) {
+            //                     nearest_server = item.s;
+            //                     min = item.l;
+            //                 }
+            //             }
+
+            //             setTimeout(() => {
+            //                 setTestServer(nearest_server);
+            //             }, 1000);
+            //         })
+            //         .catch(error => { // <- optional
+            //             console.error(error.message);
+            //         });
+            // } catch (ex) {
+            //     console.error(ex);
+            // }
+
+            const thisTestServer = serverList.find(s => s.ip_address == window.location.hostname);
+            setTestServer(thisTestServer);
 
             function setTestServer(testServer) {
                 // if (testServer) {
@@ -1411,10 +1426,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     }
 
     document.getElementById('btnTestAgain').onclick = function () {
-        window.top.location = '?r';
+        document.location.href = '?r';
     }
     document.getElementById('btnBackToHome').onclick = function () {
-        window.top.location = '/';
+        document.location.href = '/';
     }
 
     function getArcLength(length) {
