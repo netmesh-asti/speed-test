@@ -839,7 +839,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
                 const testServerSubtitleElements = document.getElementsByClassName('test-server-subtitle');
                 Array.from(testServerSubtitleElements).forEach((element) => {
-                    element.textContent = testServer ? testServer.city : "(no servers found)";
+                    element.textContent = testServer ? testServer.city : "";
                 });
             }
         }
