@@ -817,8 +817,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             //     console.error(ex);
             // }
 
-            const thisTestServer = serverList.find(s => s.hostname == window.location.hostname);
-            console.log(window.location.hostname);
+            const thisTestServer = serverList.find(s => s.hostname.split('//')[1] == window.location.hostname);
+            // console.log(window.location.hostname);
             setTestServer(thisTestServer);
 
             function setTestServer(testServer) {
