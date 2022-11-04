@@ -17,13 +17,14 @@
      Read full license terms @ http://go.openspeedtest.com/License
      If you have any Questions, ideas or Comments Please Send it via -> https://go.openspeedtest.com/SendMessage
 */
+
 window.onload = async function () {
     await OpenSpeedTest.Start();
     ostOnload();
 };
 
 window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
-
+    d.isMobile = true;
 });
 
 (function (bb) {
@@ -115,6 +116,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.downloadTestProgressBarElement = document.getElementById('downloadTestProgressBar');
             this.networkErrorModal = document.getElementById("network-error-modal");
             this.isAutoStart = false;
+            this.isMobile = false;
 
             this.kalahatingBuka = 52;
             this.gaugeRadius = 120;
@@ -134,7 +136,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.d = [];
             this.vSteps = 5;
             this.measurements = [];
-            this.d = []
+            this.d = [];
+
+            this.clientIspName = "";
+            this.clientIPAddress = "";
+            this.testServer = "";
         };
     r.prototype.reset = function () {
         this.polygon = this.chart = this.element = "";
@@ -218,6 +224,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     //     testServerName,
                     //     networkConnectionName
                     // }
+                    d.isMobile = true;
                     document.querySelectorAll('.test-server-title').forEach(element => {
                         element.textContent = data.testServerName;
                     });
@@ -718,16 +725,28 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             } catch {
                 clientIspName = null;
             }
-            
+
+            d.clientIspName = clientIspName;
+            d.clientIPAddress = clientIP;
+
+            setClient(clientIspName, clientIP);
+
+            return {
+                ispName: clientIspName,
+                publicIP: clientIP,
+            };
+        }
+
+        function setClient(ispName, publicIP) {
             const networkConnectionTitleElements = document.getElementsByClassName('network-connection-title');
             Array.from(networkConnectionTitleElements).forEach(element => {
-                element.textContent = clientIspName ?? clientIP;
+                element.textContent = ispName ?? publicIP;
                 element.setAttribute('title', element.textContent);
             });
 
             const clientIPElements = document.getElementsByClassName('client-ip');
             Array.from(clientIPElements).forEach(function (element) {
-                element.textContent = clientIspName ? clientIP : "";
+                element.textContent = ispName ? publicIP : "";
             });
         }
 
@@ -818,30 +837,23 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             // }
 
             const thisTestServer = serverList.find(s => s.hostname.split('//')[1] == window.location.hostname);
-            // console.log(window.location.hostname);
+            d.testServer = thisTestServer;
+            
             setTestServer(thisTestServer);
+        }
 
-            function setTestServer(testServer) {
-                // if (testServer) {
-                //   startButton.style.display = 'block';
-                //   buttonToGaugeGroup.classList.add('button-to-gauge-remove-filter');
-                //   setTimeout(function () {
-                //     buttonToGaugeGroup.classList.remove(...buttonToGaugeGroup.classList)
-                //   }, 500)
-                // }
+        function setTestServer(testServer) {
+            const testServerTitleElements = document.getElementsByClassName('test-server-title');
+            Array.from(testServerTitleElements).forEach((element) => {
+                const testServerName = testServer ? testServer.nickname : "(no servers found)"
+                element.textContent = testServerName;
+                element.setAttribute('title', testServerName);
+            });
 
-                const testServerTitleElements = document.getElementsByClassName('test-server-title');
-                Array.from(testServerTitleElements).forEach((element) => {
-                    const testServerName = testServer ? testServer.nickname : "(no servers found)"
-                    element.textContent = testServerName;
-                    element.setAttribute('title', testServerName);
-                });
-
-                const testServerSubtitleElements = document.getElementsByClassName('test-server-subtitle');
-                Array.from(testServerSubtitleElements).forEach((element) => {
-                    element.textContent = testServer ? testServer.city : "";
-                });
-            }
+            const testServerSubtitleElements = document.getElementsByClassName('test-server-subtitle');
+            Array.from(testServerSubtitleElements).forEach((element) => {
+                element.textContent = testServer ? testServer.city : "";
+            });
         }
 
         function a() {
@@ -1353,7 +1365,12 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
             var X = Math.ceil(Math.abs(Ga));
             d.showStatus("");
-            var cb = setInterval(a, 1E3)
+            var cb = setInterval(a, 1E3);
+
+            if (!d.isMobile) {
+                setClientConnection();
+                setTestServerConnection();
+            }
         }
         else {
             // non-auto start
@@ -1362,6 +1379,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
 
             setClientConnection();
             setTestServerConnection();
+            
+            d.isMobile = false;
 
             d.ShowAppIntro();
         }
