@@ -499,9 +499,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     r.prototype.uploadResult = function (a) {
         results.upload = a;
         1 > a && (this.upRestxt.el.textContent = a.toFixed(3));
-        1 <= a && 9999 > a && (this.upRestxt.el.textContent = a.toFixed(1));
-        1E4 <= a && 99999 > a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "16px");
-        1E5 <= a && (this.upRestxt.el.textContent = a.toFixed(1), this.upRestxt.el.style.fontSize = "14px")
+        1 <= a && 9 > a && (this.upRestxt.el.textContent = a.toFixed(2));
+        10 <= a && 99 > a && (this.upRestxt.el.textContent = a.toFixed(1));
+        100 <= a && (this.upRestxt.el.textContent = a.toFixed(0))
     };
     r.prototype.pingResults = function (a, c) {
         results.ping = a;
@@ -520,9 +520,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     r.prototype.downloadResult = function (a) {
         results.download = a;
         1 > a && (this.downResult.el.textContent = a.toFixed(3));
-        1 <= a && 9999 > a && (this.downResult.el.textContent = a.toFixed(1));
-        1E4 <= a && 99999 > a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize = "16px");
-        1E5 <= a && (this.downResult.el.textContent = a.toFixed(1), this.downResult.el.style.fontSize = "14px")
+        1 <= a && 9 > a && (this.downResult.el.textContent = a.toFixed(2));
+        10 <= a && 99 > a && (this.downResult.el.textContent = a.toFixed(1));
+        100 <= a && (this.downResult.el.textContent = a.toFixed(0))
     };
     r.prototype.jitterResult = function (a, c) {
         results.jitter = a;
@@ -606,7 +606,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     this.oDoLiveSpeed.el.textContent = c;
                 }
                 if (1 >= a && 0 < a) {
-                    c = a.toFixed(2);
+                    c = a.toFixed(3);
                     this.oDoLiveSpeed.el.textContent = c;
                 }
                 if (1 < a) {
@@ -650,14 +650,14 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             t = 0 - a,
             w = setInterval(function () {
                 var m = (Date.now() - e) / 1E3;
-                var p = m / 3;
+                var p = m / 2;
                 p--;
                 p = t * (p * p * p * p * p + 1) + a;
                 f.LiveSpeed(p, "speedToZero", c == "SendR" ? "upload" : "download");
                 f.mainGaugeProgress(p);
                 f.SetGaugeBlur(p);
                 if (3 <= m || 0 >= p) clearInterval(w), f.LiveSpeed(0, "speedToZero"), f.mainGaugeProgress(0), f.SetGaugeBlur(0), n = c
-            }, 16)
+            }, 10)
     };
     r.prototype.getNonlinearDegree = function (a) {
         var c = 0;
