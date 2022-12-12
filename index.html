@@ -289,12 +289,12 @@
 
             <linearGradient id="start-button-gradient" x1="22%" y1="100%" x2="100%" y2="0%">
               <stop offset="0%">
-                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color"  dur="300ms" fill="freeze" />
-                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
+                <!-- <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color"  dur="300ms" fill="freeze" /> -->
+                <animate begin="indefinite" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
               </stop>
               <stop offset="75%">
-                <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color" dur="300ms" fill="freeze" />
-                <animate begin="gauge-connecting-rotate-anim.end" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
+                <!-- <animate begin="indefinite" class="gauge-connecting" attributeName="stop-color" dur="300ms" fill="freeze" /> -->
+                <animate begin="indefinite" class="gauge-preparing" attributeName="stop-color" dur="200ms" to="#000000ff" fill="freeze" />
               </stop>
             </linearGradient>
 
@@ -630,6 +630,15 @@
             >
               <!-- 1. SPEED TEST STARTING -->
               <animate
+                class="gauge-connecting"
+                begin="indefinite"
+                attributeName="opacity"
+                values="0.25;1;0.25;0.25;0.25"
+                dur="0.75s"
+                repeatCount="indefinite"
+                fill="freeze"
+              />
+              <animate
                 id="gauge-connecting-r"
                 begin="indefinite"
                 class="gauge-connecting"
@@ -643,7 +652,7 @@
                 class="gauge-connecting"
                 attributeName="stroke-width"
                 dur="300ms"
-                to="6"
+                to="2"
                 fill="freeze"
               />
               <animate
@@ -655,7 +664,7 @@
                 fill="freeze"
                 to=""
               />
-              <animateTransform
+              <!-- <animateTransform
                 id="gauge-connecting-rotate-anim"
                 begin="indefinite"
                 class="gauge-connecting"
@@ -666,7 +675,7 @@
                 calcMode="linear"
                 repeatCount="indefinite"
                 fill="freeze"
-              />
+              /> -->
               <animate
                 begin="indefinite"
                 class="gauge-connecting"
@@ -676,7 +685,7 @@
                 fill="freeze"
               />
               <!-- 2. SPEED TEST PINGING -->
-              <animateTransform
+              <!-- <animateTransform
                 class="gauge-starting"
                 id="gauge-starting-rotate-anim"
                 begin="gauge-connecting-rotate-anim.end"
@@ -686,7 +695,7 @@
                 to="502,158,158"
                 calcMode="linear"
                 fill="freeze"
-              />
+              /> -->
               <!-- 3. SPEED TEST PREPARING -->
               <animate
                 id="gauge-preparing-stroke-width-anim"
@@ -734,6 +743,7 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"
               />
+              <animate id="gauge-starting-last-circle" class="gauge-starting" begin="0.75" attributeName="opacity" to="1" dur="0.5s" fill="freeze"/>
               <!-- 4. SPEED TEST DONE -->
               <animate
                 id="gauge-done-stroke-width"
@@ -769,7 +779,131 @@
                 fill="freeze"
               />
             </circle>
+            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-142, 158 158)">
+              <animate
+                begin="1"
+                attributeName="x1"
+                to="270"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                begin="1"
+                attributeName="x2"
+                to="286"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animateTransform
+                begin="1"
+                attributeName="transform"
+                type="rotate"
+                to="-218,158,158"
+                dur="0.5"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+            </line>
+            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-38, 158 158)">
+              <animate
+                begin="1"
+                attributeName="x1"
+                to="270"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                begin="1"
+                attributeName="x2"
+                to="286"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animateTransform
+                begin="1"
+                attributeName="transform"
+                type="rotate"
+                to="38,158,158"
+                dur="0.5"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+            </line>
+            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(90, 158 158)">
+              <!-- <animate
+                begin="0.5"
+                attributeName="x1"
+                to="270"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/> -->
+              <animate
+                begin="1"
+                attributeName="x2"
+                to="256"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animateTransform
+                begin="1"
+                attributeName="transform"
+                type="rotate"
+                to="142,158,158"
+                dur="0.25"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+            </line>
           </g>
+          <g>
+            <!-- <animateTransform begin="1" attributeName="transform" type="translate" to="0 16" dur="0.5" 
+              calcMode="spline"
+              keyTimes="0;1"
+              keySplines="0.3 0.3 0.1 1" fill="freeze" /> -->
+            <!-- <line x1="158" y1="158" x2="258" y2="158" stroke="yellow" transform="rotate(-38, 158 158)"/>
+            <line x1="158" y1="158" x2="258" y2="158" stroke="yellow" transform="rotate(-142, 158 158)"/>
+            <line x1="158" y1="158" x2="258" y2="158" stroke="yellow" transform="rotate(90, 158 158)"/> -->
+            <circle
+              r="42"
+              cx="158"
+              cy="158"
+              style="stroke: var(--primary-color)"
+              stroke-width="2"
+              opacity="0"
+              fill="transparent"
+            >
+              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;0.25;1;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
+              <animate class="gauge-starting" begin="0.25" attributeName="opacity" to="0" dur="0.5s" fill="freeze"/>
+            </circle>
+            <circle
+              r="70"
+              cx="158"
+              cy="158"
+              style="stroke: var(--primary-color)"
+              stroke-width="2"
+              opacity="0"
+              fill="transparent"
+            >
+              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;1;0.25;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
+              <animate class="gauge-starting" begin="0.5" attributeName="opacity" to="0" dur="0.5s" fill="freeze"/>
+            </circle>
+            
+          <g>
           <use id="mainGaugeBlue-Desk" class="main-GaugeBlue" xlink:href="#mainGaugeBlue" viewBox="0 0 316 316"/>
           <a id="startButtonDesk" cursor="pointer">
             <circle r="84" cx="158" cy="158" fill="transparent">
