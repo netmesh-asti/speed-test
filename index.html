@@ -779,9 +779,30 @@
                 fill="freeze"
               />
             </circle>
-            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-142, 158 158)">
+            <line x1="158" y1="158" x2="158" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-142, 158 158)">
               <animate
-                begin="1"
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x1"
+                to="158"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x2"
+                to="258"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x1"
                 to="270"
                 dur="0.5s"
@@ -790,7 +811,8 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
               <animate
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x2"
                 to="286"
                 dur="0.5s"
@@ -799,7 +821,8 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
               <animateTransform
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="transform"
                 type="rotate"
                 to="-218,158,158"
@@ -809,9 +832,30 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
             </line>
-            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-38, 158 158)">
+            <line x1="158" y1="158" x2="158" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(-38, 158 158)">
               <animate
-                begin="1"
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x1"
+                to="158"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x2"
+                to="258"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x1"
                 to="270"
                 dur="0.5s"
@@ -820,7 +864,8 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
               <animate
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x2"
                 to="286"
                 dur="0.5s"
@@ -829,7 +874,8 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
               <animateTransform
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="transform"
                 type="rotate"
                 to="38,158,158"
@@ -839,31 +885,54 @@
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
             </line>
-            <line x1="158" y1="158" x2="258" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(90, 158 158)">
-              <!-- <animate
-                begin="0.5"
+            <line x1="158" y1="158" x2="158" y2="158" stroke="var(--primary-color)" stroke-width="2" transform="rotate(90, 158 158)">
+              <animate
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x1"
+                to="158"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-starting"
+                begin="indefinite"
+                attributeName="x2"
+                to="258"
+                dur="0.5s"
+                calcMode="spline"
+                keyTimes="0;1"
+                keySplines="0.3 0.3 0.1 1"
+                fill="freeze"/>
+              <animate
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x1"
                 to="270"
                 dur="0.5s"
                 calcMode="spline"
                 keyTimes="0;1"
                 keySplines="0.3 0.3 0.1 1"
-                fill="freeze"/> -->
+                fill="freeze"/>
               <animate
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="x2"
-                to="256"
+                to="286"
                 dur="0.5s"
                 calcMode="spline"
                 keyTimes="0;1"
                 keySplines="0.3 0.3 0.1 1"
                 fill="freeze"/>
               <animateTransform
-                begin="1"
+                class="gauge-preparing"
+                begin="indefinite"
                 attributeName="transform"
                 type="rotate"
-                to="142,158,158"
-                dur="0.25"
+                to="90,158,158"
+                dur="0.5"
                 calcMode="spline"
                 keyTimes="0;1"
                 keySplines="0.3 0.3 0.1 1"
@@ -887,8 +956,8 @@
               opacity="0"
               fill="transparent"
             >
-              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;0.25;1;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
-              <animate class="gauge-starting" begin="0.25" attributeName="opacity" to="0" dur="0.5s" fill="freeze"/>
+              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;1;0.25;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
+              <animate class="gauge-starting" begin="0.25" attributeName="opacity" to="0" dur="0.75s" fill="freeze"/>
             </circle>
             <circle
               r="70"
@@ -899,8 +968,8 @@
               opacity="0"
               fill="transparent"
             >
-              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;1;0.25;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
-              <animate class="gauge-starting" begin="0.5" attributeName="opacity" to="0" dur="0.5s" fill="freeze"/>
+              <animate class="gauge-connecting" begin="indefinite" attributeName="opacity" values="0.25;0.25;0.25;1;0.25" dur="0.75s" repeatCount="indefinite" fill="freeze"/>
+              <animate class="gauge-starting" begin="0.5" attributeName="opacity" to="0" dur="0.75s" fill="freeze"/>
             </circle>
             
           <g>
