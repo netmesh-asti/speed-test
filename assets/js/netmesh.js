@@ -256,17 +256,17 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         const sda = document.querySelector('animate.gauge-connecting[attributeName="stroke-dasharray"]');
         const ra = document.querySelector('animate.gauge-connecting[attributeName="r"]');
         const r = parseFloat(ra.getAttribute('to'));
-        sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (0 / 180)))}, ${getArcLength(r * 2)}`);
+        sda.setAttribute('to', `${getArcLength(r * 2 * (1 - (52 / 180)))}, ${getArcLength(r * 2)}`);
 
         document.querySelector('#start-button-gradient>stop:nth-child(1)>animate.gauge-connecting[attributeName="stop-color"]')
-            ?.setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color'));
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color'));
         document.querySelector('#start-button-gradient>stop:nth-child(2)>animate.gauge-connecting[attributeName="stop-color"]')
-            ?.setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color') + "00");
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--connecting-color') + "00");
 
         document.querySelector('#start-button-gradient>stop:nth-child(1)>animate.gauge-preparing[attributeName="stop-color"]')
-            ?.setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
         document.querySelector('#start-button-gradient>stop:nth-child(2)>animate.gauge-preparing[attributeName="stop-color"]')
-            ?.setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
+            .setAttribute('to', getComputedStyle(document.documentElement).getPropertyValue('--gauge-background-color'));
 
         for (var anim of animations) {
             anim.beginElement();
@@ -333,10 +333,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             anim.beginElement();
         }
         return new Promise((resolve) => {
-            // document.getElementById('gauge-starting-rotate-anim')?.addEventListener('endEvent', () => {
-            //     resolve();
-            // });
-            document.getElementById('gauge-starting-last-circle')?.addEventListener('endEvent', () => {
+            document.getElementById('gauge-starting-rotate-anim').addEventListener('endEvent', () => {
                 resolve();
             });
         });
