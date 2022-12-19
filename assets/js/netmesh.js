@@ -21,6 +21,13 @@
 window.onload = async function () {
     await OpenSpeedTest.Start();
     ostOnload();
+
+    // if (navigator.connection) {
+    //     console.log(navigator.connection.type);
+    // } else {
+    //     console.log("navigator.connection is not supported by this browser");
+    // }
+      
 };
 
 window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
@@ -130,6 +137,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.scale = [];
             this.polygon = this.chart = this.element = "";
             this.width = Math.max(dlEstimatedMeasurementCount, ulEstimatedMeasurementCount);
+            this.downloadDataTrasferSize = 0;
+            this.uploadDataTrasferSize = 0;
             this.height = 50;
             this.maxValue = 0;
             this.values = [];
@@ -302,32 +311,32 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     }
     r.prototype.ShowUI = async function () {
         const mainGauge = document.getElementById('button-to-gauge');
-        const totalGaugeRadius = parseFloat(mainGauge.getAttribute('cx'));
-        const gaugeStrokeWidth = parseFloat(mainGauge.getAttribute('stroke-width'));
-        const actualGaugeRadius = totalGaugeRadius + gaugeStrokeWidth / 2;
+        // const totalGaugeRadius = parseFloat(mainGauge.getAttribute('cx'));
+        // const gaugeStrokeWidth = parseFloat(mainGauge.getAttribute('stroke-width'));
+        // const actualGaugeRadius = totalGaugeRadius + gaugeStrokeWidth / 2;
 
         var animations = document.getElementsByClassName("gauge-starting");
         for (var anim of animations) {
             if (anim.id == "gauge-starting-rotate-anim") {
-                // const w = window.getComputedStyle(mainGauge);
-                // const t = w.getPropertyValue("transform");
+                const w = window.getComputedStyle(mainGauge);
+                const t = w.getPropertyValue("transform");
 
-                // var values = t.split("(")[1];
-                // values = values.split(")")[0];
-                // values = values.split(",");
-                // var a = values[0];
-                // var b = values[1];
-                const {a, b} = mainGauge.transform.baseVal.consolidate().matrix;
+                var values = t.split("(")[1];
+                values = values.split(")")[0];
+                values = values.split(",");
+                var a = values[0];
+                var b = values[1];
+                // const {a, b} = mainGauge.transform.baseVal.consolidate().matrix;
                 var angle = Math.round(Math.atan2(b, a) * (180 / Math.PI));
-                console.log("angle", angle);
+                // console.log("angle", angle);
                 anim.setAttribute(
                     "from",
                     `${angle >= 142 ? angle : angle + 360},158,158`
                 );
+                const rotateDur = ((angle >= 142 ? 502 - angle : 502 - angle - 360) / 360) * 750;
                 anim.setAttribute(
                     "dur",
-                    `${((angle >= 142 ? 502 - angle : 502 - angle - 360) / 360) * 750
-                    }ms`
+                    `${rotateDur}ms`
                 );
             }
             anim.beginElement();
@@ -647,7 +656,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             t = 0 - a,
             w = setInterval(function () {
                 var m = (Date.now() - e) / 1E3;
-                var p = m / 2;
+                var p = m / 1.25;
                 p--;
                 p = t * (p * p * p * p * p + 1) + a;
                 f.LiveSpeed(p, "speedToZero", c == "SendR" ? "upload" : "download");
@@ -922,8 +931,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     sa = (window.performance.now() - ra) / 1E3;
                     m("dl");
                     N = M.AvgSpeed(x, ta, dlDuration);
-                    // displaySpeed = this.timeNow >= dlDuration - ta ? N : x
-                    displaySpeed = x;
+                    displaySpeed = M.SpeedSamples.length == 0 ? x : N;
+                    // displaySpeed = x;
                     d.showStatus("Mbps");
                     d.mainGaugeProgress(displaySpeed);
                     d.SetGaugeBlur(displaySpeed);
@@ -936,7 +945,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                             d.Symbol(2)
                         ) : d.GaugeProgresstoZero(displaySpeed, "Upload"),
                             d.showStatus(""),
-                            d.downloadResult(displaySpeed),
+                            d.downloadResult(N),
                             aa = O,
                             G = 1,
                             n = "busy",
@@ -967,15 +976,15 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     P = (window.performance.now() - pa) / 1E3,
                     m("up"),
                     Q = M.AvgSpeed(x, va, ulDuration),
-                    // displaySpeed = this.timeNow >= ulDuration - va ? Q : x,
-                    displaySpeed = x,
+                    displaySpeed = M.SpeedSamples.length == 0 ? x : Q,
+                    // displaySpeed = x,
                     d.mainGaugeProgress(displaySpeed),
                     d.SetGaugeBlur(displaySpeed),
                     d.LiveSpeed(displaySpeed, undefined, "upload"),
                     d.Graph(x, 1),
                     P >= ulDuration && 1 == G && (
                         ba = J,
-                        d.uploadResult(displaySpeed),
+                        d.uploadResult(Q),
                         d.GaugeProgresstoZero(displaySpeed, "SendR"),
                         ua = void 0,
                         d.showStatus("Finishing up..."),
@@ -1056,7 +1065,6 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             speedResultsPanel.onanimationend = function () {
                 otherResultsPanel.style.visibility = 'visible';
                 otherResultsPanel.classList.add('fade-in');
-                
             }
 
             const homePanel = document.getElementById('homePanel');
@@ -1122,40 +1130,62 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 (za = b),
                 (ea += Xa),
                 0 < W && (x = Z = (W / ea / 125) * upAdjust));
-        }        
+        }
 
-        function p(b) {
+        function p(b, connectionTimeout = 10000) {
+            // TODO:
+            // if connectionTimeout = 10 seconds, show "wait lang bhie mabagal internet dito..."
+            // if connectionTimeout = 20 seconds, show "wait lang konting kembot pa bhie..."
+            // if connectionTimeout = 30 seconds, show "manood muna kayo ng Netflix... ay 'di pala pwede makupad internet dito jusme parang nasa gitna tayo ng Atlantic Ocean"
+            // if connectionTimeout = 45 seconds, show "jusme nakalipat na sa Mars lahat ng tao sa Earth..."
+            // if connectionTimeout = 60 seconds, show "teh tama na testing. nakababa na ulit dito si jesus", raise event to mobile phone
             var l = 0;
             y[b] = new XMLHttpRequest;
             console.log("ano download", Aa.Download + "?n=" + Math.random());
-            y[b].open("GET", Aa.Download + "?n=" + Math.random(), !0);
+            y[b].open("GET", "https://netmesh-speedtest.pregi.net/" + Aa.Download + "?n=" + Math.random(), !0);
             y[b].onload = function (h) {
+                console.log("XMLHttpRequest", "onload");
+
                 0 === l && (O += h.total);
                 "initDown" ==
                     n && (n = "Downloading");
                 y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
                 0 === G && p(b);
+                
+                console.log("XMLHttpRequest onload DOWNLOAD", h.total, dlEstimatedMeasurementCount);
             };
             y[b].onerror = function (h) {
                 0 === G && p(b)
+
+                console.log("on-error", "DOWNLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
             };
             y[b].onprogress = function (h) {
+                console.log("XMLHttpRequest", "onprogress");
                 if (1 === G) return y[b].abort(), y[b] = null, y[b] = void 0, delete y[b], !1;
                 "initDown" == n && (n = "Downloading");
                 var u = 0 >= h.loaded ? 0 : h.loaded - l;
                 if (isNaN(u) || !isFinite(u) || 0 > u) return !1;
                 O += u;
                 l = h.loaded;
+
+                // d.downloadDataTrasferSize += h.total;
             };
             y[b].responseType = "arraybuffer";
-            y[b].send()
+            y[b].send();
+
+            y[b].timeout = 30000; // 10 seconds
+            y[b].ontimeout = function (h) {
+                console.log("on-timeout", "DOWNLOAD awat na bhie 'wag ka ng maghintay. sanay ka naman laging mag-isa...");
+                d.ConnectionError();
+            };
         }
 
         function z(b) {
             var l = 0;
             v[b] = new XMLHttpRequest;
             console.log("ano upload", Aa.Upload + "?n=" + Math.random());
-            v[b].open("POST", Aa.Upload + "?n=" + Math.random(), !0);
+            v[b].open("POST", "https://netmesh-speedtest.pregi.net/" +  Aa.Upload + "?n=" + Math.random(), !0);
+            v[b].lengthComputable = true;
             v[b].upload.onprogress = function (h) {
                 "initup" == n && void 0 === u && (n = "Uploading");
                 if (P >= ulDuration) return v[b].abort(), v[b] = null, v[b] = void 0, delete v[b], !1;
@@ -1163,8 +1193,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 if (isNaN(u) || !isFinite(u) || 0 > u) return !1;
                 J += u;
                 l = h.loaded
+
+                // d.uploadDataTrasferSize += h.loaded;
             };
-            v[b].onload = function () {
+            v[b].onload = function (x) {
                 if (0 === l && ((J += 1048576 * ulDataSize), P >= ulDuration)) return v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b], !1;
                 if ("initup" == n && void 0 === h) {
                     var h;
@@ -1172,11 +1204,23 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 }
                 v[b] && (v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b]);
                 1 === G && z(b);
+
+                console.log("XMLHttpRequest onload UPLOAD", x.loaded, ulEstimatedMeasurementCount);
             };
             v[b].onerror = function (h) {
-                P <= ulDuration && z(b)
+                P <= ulDuration && z(b);
+
+                console.log("on-error", "UPLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
+                d.ConnectionError();
             };
             v[b].setRequestHeader("Content-Type", "application/octet-stream");
+            
+            v[b].timeout = 30000; // 10 seconds
+            v[b].ontimeout = function (h) {
+                console.log("on-timeout", "UPLOAD awat na bhie 'wag ka ng maghintay. sanay ka naman laging mag-isa...");
+                d.ConnectionError();
+            };
+
             0 < b && 17E3 >= J || v[b].send(ua)
         }
 
@@ -1220,7 +1264,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 "Stop" != ha && I.abort();
 
                 d.pingProgressBarElement.style.width = `${H.length / pingSamples * 100}%`;
-
+                
                 I.open(pingMethod, b[pingFile] + "?n=" + Math.random(), !0);
                 I.timeout = pingTimeOut;
                 var Ea = window.performance.now();
