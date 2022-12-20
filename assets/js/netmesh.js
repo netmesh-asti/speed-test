@@ -42,12 +42,31 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
     var n, Ha, Ia = function (a) {
         a && "function" === typeof a && a()
     };
-    const results = Object.seal({
-        download: null,
-        upload: null,
-        ping: null,
-        jitter: null,
+    // const results = Object.seal({
+    //     download: null,
+    //     upload: null,
+    //     ping: null,
+    //     jitter: null,
+    // });
+    const webSpeedTestResponse = Object.seal({
+        status: {
+            success: null,
+            message: null,
+        },
+        results: Object.seal({
+            download: Object.seal({
+                speed: null,
+                dataUsed: null,
+            }),
+            upload: Object.seal({
+                speed: null,
+                dataUsed: null,
+            }),
+            ping: null,
+            jitter: null,
+        }),
     });
+        
     g.prototype.fade = function (a, c, f) {
         var e = "in" === a,
             t = e ? 0 : 1,
@@ -122,6 +141,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.uploadTestProgressBarElement = document.getElementById('uploadTestProgressBar');
             this.downloadTestProgressBarElement = document.getElementById('downloadTestProgressBar');
             this.networkErrorModal = document.getElementById("network-error-modal");
+            this.networkErrorModalTitle = document.querySelector("#network-error-modal .modal-title");
+            this.networkErrorModalMessage = document.querySelector("#network-error-modal .modal-message");
             this.isAutoStart = false;
             this.isMobile = false;
 
@@ -491,26 +512,45 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             this.mainGaugeWhite_Desk.el.style.strokeDashoffset = .1;
             this.mainGaugeBlue_Desk.el.style.strokeDashoffset = adjustedMaxDegree + 0.1;
         }
-        console.log({f, });
     };
     r.prototype.showStatus = function (a) {
         this.oDoLiveStatus.el.textContent = a
     };
-    r.prototype.ConnectionError = function () {
+    r.prototype.ConnectionError = function (title = null, message = null) {
         // this.ConnectErrorMob.el.style.display =
         //     "block";
         // this.ConnectErrorDesk.el.style.display = "block";
         this.networkErrorModal.style.display = 'block';
+        title && (this.networkErrorModalTitle.textContent = title);
+        message && (this.networkErrorModalMessage.textContent = message);
+
     };
     r.prototype.uploadResult = function (a) {
-        results.upload = a;
-        1 > a && (this.upRestxt.el.textContent = a.toFixed(3));
-        1 <= a && 9 > a && (this.upRestxt.el.textContent = a.toFixed(2));
-        10 <= a && 99 > a && (this.upRestxt.el.textContent = a.toFixed(1));
-        100 <= a && (this.upRestxt.el.textContent = a.toFixed(0))
+        webSpeedTestResponse.results.upload.speed = this.getDisplaySpeed(a);
+        this.upRestxt.el.textContent = this.getDisplaySpeed(a);
     };
+    r.prototype.getDisplaySpeed = function (speed) {
+        if (speed <= 0) {
+            return 0;
+        }
+
+        if (speed >= 1000) {
+            return speed.toFixed(0);
+        }
+        else if (speed >= 100) {
+            return speed.toFixed(1);
+        }
+        else if (speed >= 1) {
+            return speed.toFixed(2);
+        }
+        else if (speed < 1) {
+            return speed.toFixed(3);
+        }
+        
+        return speed.toFixed(2);
+    }
     r.prototype.pingResults = function (a, c) {
-        results.ping = a;
+        webSpeedTestResponse.results.ping = a;
         // console.log("results.ping", a);
         "Ping" === c && (
             1 <= a && 1E4 > a ? (
@@ -524,14 +564,11 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         "Error" === c && (this.oDoLiveSpeed.el.textContent = a)
     };
     r.prototype.downloadResult = function (a) {
-        results.download = a;
-        1 > a && (this.downResult.el.textContent = a.toFixed(3));
-        1 <= a && 9 > a && (this.downResult.el.textContent = a.toFixed(2));
-        10 <= a && 99 > a && (this.downResult.el.textContent = a.toFixed(1));
-        100 <= a && (this.downResult.el.textContent = a.toFixed(0))
+        webSpeedTestResponse.results.download.speed = this.getDisplaySpeed(a);
+        this.downResult.el.textContent = this.getDisplaySpeed(a);
     };
     r.prototype.jitterResult = function (a, c) {
-        results.jitter = a;
+        webSpeedTestResponse.results.jitter = a;
         "Jitter" === c && (
             1 <= a && 1E4 > a ? (
                 this.jitterDesk.el.textContent = Math.floor(a)
@@ -607,30 +644,33 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 // }
                 break;
             default:
-                if (0 == a) {
-                    c = a.toFixed(0);
-                    this.oDoLiveSpeed.el.textContent = c;
-                }
-                if (1 >= a && 0 < a) {
-                    c = a.toFixed(3);
-                    this.oDoLiveSpeed.el.textContent = c;
-                }
-                if (1 < a) {
-                    c = a.toFixed(2);
-                    this.oDoLiveSpeed.el.textContent = c;
-                }
-                if (10 < a) {
-                    c = a.toFixed(1);
-                    this.oDoLiveSpeed.el.textContent = c;
-                }
-                if (100 < a) {
-                    c = a.toFixed(0);
-                    this.oDoLiveSpeed.el.textContent = c;
-                }
+                // if (0 == a) {
+                //     c = a.toFixed(0);
+                //     this.oDoLiveSpeed.el.textContent = c;
+                // }
+                // if (1 > a && 0 < a) {
+                //     c = a.toFixed(3);
+                //     this.oDoLiveSpeed.el.textContent = c;
+                // }
+                // if (1 <= a) {
+                //     c = a.toFixed(2);
+                //     this.oDoLiveSpeed.el.textContent = c;
+                // }
+                // if (10 <= a) {
+                //     c = a.toFixed(1);
+                //     this.oDoLiveSpeed.el.textContent = c;
+                // }
+                // if (1000 <= a) {
+                //     c = a.toFixed(0);
+                //     this.oDoLiveSpeed.el.textContent = c;
+                // }
+
+                this.oDoLiveSpeed.el.textContent = this.getDisplaySpeed(a);
+                
                 if (topSpeed >= a) {
                     this.oDoTopSpeed.el.textContent = `${topSpeed}+`;
                     this.oDoTopSpeed.el.style.fontSize = 15;
-                    this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)"
+                    this.oDoTopSpeed.el.style.fill = "var(--speed-number-off-color)";
                 }
                 if (topSpeed < a) {
                     this.oDoTopSpeed.el.textContent = topSpeedPlus + "+";
@@ -647,7 +687,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }
     }
     r.prototype.SetGaugeBlur = function (speed) {
-        const blurAmount = speed <= 0 ? 0 : Math.min(2 ** Math.log10(speed / this.scaleTopSpeed * 1000) * 1.5 * ((speed / this.scaleTopSpeed * 1000) / 1000) ** (1 / 3), 12);
+        const blurAmount = speed <= 0 ? 0 : Math.min(2 ** Math.log10(speed / this.scaleTopSpeed * 1000) * 2 * ((speed / this.scaleTopSpeed * 1000) / 1000) ** (1 / 2), 16);
+        
         this.f2BlurElement.setStdDeviation(blurAmount, blurAmount);
     }
     r.prototype.GaugeProgresstoZero = function (a, c) {
@@ -681,6 +722,18 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             else return this.scale[c - 1].degreePosition + (a - this.scale[c - 1].value) * (this.scale[c].degreePosition - this.scale[c - 1].degreePosition) / (this.scale[c].value - this.scale[c - 1].value);
         return this.scale[this.scale.length - 1].degreePosition
     };
+    r.prototype.formatBytes = function (bytes, decimals = 2) {
+        if (!+bytes) return '0 Bytes'
+    
+        const k = 1024
+        const dm = decimals < 0 ? 0 : decimals
+        const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB']
+    
+        const i = Math.floor(Math.log(bytes) / Math.log(k))
+    
+        return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`
+    }
+
     var S = function () {
         this.OverAllTimeAvg = window.performance.now();
         this.SpeedSamples = [];
@@ -763,7 +816,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             let serverList = [];
             try {
                 const res = await fetch('https://netmesh.pregi.net/portal/api/server/');
-                serverList = Array.from(await res.json());
+                serverList = Array.from(await res.json()).filter(s => s.server_type === "web-based");
             } catch (ex) {
                 console.error(ex);
             }
@@ -778,80 +831,97 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             // serverList.push(localServer);
             // // console.log(serverList);
 
-            // const testServersSelect = document.getElementById('test-servers-select');
-            // const testServersSelectChildren = [];
-            // for (const server of serverList) {
-            //     const serverOption = document.createElement('option');
-            //     serverOption.text = server.nickname;
-            //     serverOption.value = server.url;
-            //     testServersSelectChildren.push(serverOption);
-            // }
-            // testServersSelect.replaceChildren(...testServersSelectChildren);
+            const testServersSelect = document.getElementById('test-servers-select');
+            const testServersSelectChildren = [];
+            for (const server of serverList) {
+                const serverOption = document.createElement('option');
+                serverOption.text = server.nickname;
+                serverOption.value = server.url;
+                testServersSelectChildren.push(serverOption);
+            }
+            testServersSelect.replaceChildren(...testServersSelectChildren);
 
-            // try {
-            //     let promises = [];
-            //     for (let server of serverList) {
-            //         let p = new Promise((resolve, reject) => {
-            //             let wdt = true;
+            try {
+                let promises = [];
+                for (let server of serverList) {
+                    let p = new Promise((resolve, reject) => {
+                        // let wdt = true;
 
-            //             // add a setTimeout delay if you want
-            //             let tempsocket = io(server.url + '/pingpong');
-            //             console.log("pingpong", server.url + '/pingpong');
+                        // add a setTimeout delay if you want
+                        // let tempsocket = io(server.url + '/pingpong');
+                        // console.log("pingpong", server.url + '/pingpong');
 
-            //             let start = (new Date).getTime();
 
-            //             tempsocket.on('pong', (ev) => {
-            //                 wdt = false;
-            //                 latency = (new Date).getTime() - start;
-            //                 tempsocket.disconnect();
-            //                 console.log({ s: server, l: latency });
-            //                 resolve({ s: server, l: latency });  // or resolve(ev);
-            //             });
+                        // tempsocket.on('pong', (ev) => {
+                        //     wdt = false;
+                        //     latency = (new Date).getTime() - start;
+                        //     tempsocket.disconnect();
+                        //     console.log({ s: server, l: latency });
+                        //     resolve({ s: server, l: latency });  // or resolve(ev);
+                        // });
 
-            //             setTimeout(() => {
-            //                 if (wdt == true) {
-            //                     tempsocket.disconnect();
-            //                     resolve(Number.MAX_VALUE); // a very large dummy value
-            //                 }
-            //             }, 5000);
-            //         });
+                        // setTimeout(() => {
+                        //     if (wdt == true) {
+                        //         tempsocket.disconnect();
+                        //         resolve(Number.MAX_VALUE); // a very large dummy value
+                        //     }
+                        // }, 5000);
 
-            //         promises.push(p);
-            //     }
+                        const startTime = (new Date).getTime();
+                        const reqXML = new XMLHttpRequest();
+                        reqXML.onreadystatechange = function () {
+                            if(reqXML.readyState == 4)  {
+                                if (reqXML.status == 200) {
+                                    latency = (new Date).getTime() - startTime;
+                                    console.log({ s: server, l: latency });
+                                    resolve({ s: server, l: latency });
+                                } else {
+                                    resolve(Number.MAX_VALUE);
+                                }
+                            }
+                        };
+                        console.log(server.url);
+                        reqXML.open("GET", server.url + "/upload", true);         
+                        reqXML.send(null);
+                    });
 
-            //     Promise.all(promises)
-            //         .then(values => {
-            //             console.table(values);
+                    promises.push(p);
+                }
 
-            //             // process values here
-            //             min = Number.MAX_VALUE;  // initialize to an arbitrarily large number
-            //             nearest_server = null;
+                Promise.all(promises)
+                    .then(values => {
+                        console.table(values);
 
-            //             for (let item of values) {
-            //                 if (item.l <= min) {
-            //                     nearest_server = item.s;
-            //                     min = item.l;
-            //                 }
-            //             }
+                        // process values here
+                        min = Number.MAX_VALUE;  // initialize to an arbitrarily large number
+                        nearest_server = null;
 
-            //             setTimeout(() => {
-            //                 setTestServer(nearest_server);
-            //             }, 1000);
-            //         })
-            //         .catch(error => { // <- optional
-            //             console.error(error.message);
-            //         });
-            // } catch (ex) {
-            //     console.error(ex);
-            // }
+                        for (let item of values) {
+                            if (item.l <= min) {
+                                nearest_server = item.s;
+                                min = item.l;
+                            }
+                        }
 
-            const thisTestServer = serverList.find(s => s.hostname.split('//')[1] == window.location.hostname);
-            d.testServer = thisTestServer;
-            
-            setTestServer(thisTestServer);
+                        setTimeout(() => {
+                            setTestServer(nearest_server);
+                        }, 1000);
+                    })
+                    .catch(error => { // <- optional
+                        console.error(error.message);
+                    });
+            } catch (ex) {
+                console.error(ex);
+            }
+
+            // const thisTestServer = serverList.find(s => s.hostname.split('//')[1] == window.location.hostname);
+            // d.testServer = thisTestServer;
+            // setTestServer(thisTestServer);
         }
 
         function setTestServer(testServer) {
+            console.log({testServer});
+            d.testServer = testServer;
             const testServerTitleElements = document.getElementsByClassName('test-server-title');
             Array.from(testServerTitleElements).forEach((element) => {
                 const testServerName = testServer ? testServer.nickname : "(no servers found)"
@@ -922,7 +992,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     if (0 == T) {
                         T = 1;
                         console.log('Testing download speed');
-                        d.showStatus("Testing download speed..");
+                        // d.showStatus("Testing download speed..");
                         var h = (window.performance.now() - ra) / 1E3;
                         Ma = h;
                         d.progress(1, dlDuration + 2.5);
@@ -933,6 +1003,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     N = M.AvgSpeed(x, ta, dlDuration);
                     displaySpeed = M.SpeedSamples.length == 0 ? x : N;
                     // displaySpeed = x;
+
+                    console.log({downloadSpeed: x});
                     d.showStatus("Mbps");
                     d.mainGaugeProgress(displaySpeed);
                     d.SetGaugeBlur(displaySpeed);
@@ -964,7 +1036,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 "Uploading" === n && (
                     1 == T && (
                         T = 2,
-                        d.showStatus("Testing upload speed.."),
+                        // d.showStatus("Testing upload speed.."),
                         x = 0,
                         M.reset(),
                         d.reset(),
@@ -978,6 +1050,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     Q = M.AvgSpeed(x, va, ulDuration),
                     displaySpeed = M.SpeedSamples.length == 0 ? x : Q,
                     // displaySpeed = x,
+                    console.log({uploadSpeed: x}),
                     d.mainGaugeProgress(displaySpeed),
                     d.SetGaugeBlur(displaySpeed),
                     d.LiveSpeed(displaySpeed, undefined, "upload"),
@@ -994,8 +1067,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     )
                 );
                 if ("Error" === n) {
-                    d.showStatus("Check your network connection status.");
-                    d.ConnectionError();
+                    d.showStatus("Error");
                     n = "busy";
                     clearInterval(measurementFunctionInterval);
                     h = document.createElement("div");
@@ -1005,6 +1077,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                     var A = document.getElementById("oDoLiveSpeed");
                     u.innerHTML = A.innerHTML;
                     A.innerHTML = h.innerHTML;
+
+                    d.ConnectionError();
                 }
                 "SendR" === n && (
                     d.showStatus(""),
@@ -1021,7 +1095,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                         // h.setAttributeNS("http://www.w3.org/1999/xlink", "xlink:href", U),
                         saveData && qa(5)) : qa(3),
                     n = "busy",
-    
+
+                    webSpeedTestResponse.status.success = true,
                     notify(),
                     clearInterval(measurementFunctionInterval)
                 )
@@ -1084,8 +1159,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
         }
 
         function notify() {
+            console.log(webSpeedTestResponse);
             try {
-                window.flutter_inappwebview.callHandler('get-results', results);
+                window.flutter_inappwebview.callHandler('get-results', webSpeedTestResponse);
             } catch { }
         }
 
@@ -1132,7 +1208,7 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 0 < W && (x = Z = (W / ea / 125) * upAdjust));
         }
 
-        function p(b, connectionTimeout = 10000) {
+        function p(b, attempts = 0) {
             // TODO:
             // if connectionTimeout = 10 seconds, show "wait lang bhie mabagal internet dito..."
             // if connectionTimeout = 20 seconds, show "wait lang konting kembot pa bhie..."
@@ -1142,9 +1218,9 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
             var l = 0;
             y[b] = new XMLHttpRequest;
             console.log("ano download", Aa.Download + "?n=" + Math.random());
-            y[b].open("GET", "https://netmesh-speedtest.pregi.net/" + Aa.Download + "?n=" + Math.random(), !0);
+            y[b].open("GET", d.testServer.url + "/" + Aa.Download + "?n=" + Math.random(), !0);
             y[b].onload = function (h) {
-                console.log("XMLHttpRequest", "onload");
+                // console.log("XMLHttpRequest", "onload");
 
                 0 === l && (O += h.total);
                 "initDown" ==
@@ -1152,40 +1228,50 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 y[b] && (y[b].abort(), y[b] = null, y[b] = void 0, delete y[b]);
                 0 === G && p(b);
                 
-                console.log("XMLHttpRequest onload DOWNLOAD", h.total, dlEstimatedMeasurementCount);
+                // console.log("data transferred DOWNLOAD onload", h.total, dlEstimatedMeasurementCount);
             };
             y[b].onerror = function (h) {
-                0 === G && p(b)
+                // console.log("balyu ni G", G);
+                // console.log("ready state", y[b]);
+                console.log("attempts", attempts);
+                if (attempts < 3000) {
+                    0 === G && p(b, ++attempts);
+                    return;
+                }
 
-                console.log("on-error", "DOWNLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
+                // console.log("on-error", "DOWNLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
+                d.ConnectionError("Network Error", "Mali. Lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
             };
             y[b].onprogress = function (h) {
-                console.log("XMLHttpRequest", "onprogress");
+                // console.log("XMLHttpRequest", "onprogress");
                 if (1 === G) return y[b].abort(), y[b] = null, y[b] = void 0, delete y[b], !1;
                 "initDown" == n && (n = "Downloading");
                 var u = 0 >= h.loaded ? 0 : h.loaded - l;
                 if (isNaN(u) || !isFinite(u) || 0 > u) return !1;
                 O += u;
                 l = h.loaded;
-
+                
+                // d.showStatus(d.formatBytes(O));
+                webSpeedTestResponse.results.download.dataUsed = d.formatBytes(O);
+                // console.log("data transferred DOWNLOAD", d.formatBytes(O), O, h.total);
                 // d.downloadDataTrasferSize += h.total;
             };
-            y[b].responseType = "arraybuffer";
-            y[b].send();
 
-            y[b].timeout = 30000; // 10 seconds
+            y[b].timeout = 60000; // 10 seconds
             y[b].ontimeout = function (h) {
                 console.log("on-timeout", "DOWNLOAD awat na bhie 'wag ka ng maghintay. sanay ka naman laging mag-isa...");
-                d.ConnectionError();
+                d.ConnectionError("Awat na bhie", "'Wag ka nang magpanggap na masipag. Naiintindihan ka namin sa 2023 na lang 'yan... (Network Timeout)");
             };
+
+            y[b].responseType = "arraybuffer";
+            y[b].send();
         }
 
         function z(b) {
             var l = 0;
             v[b] = new XMLHttpRequest;
             console.log("ano upload", Aa.Upload + "?n=" + Math.random());
-            v[b].open("POST", "https://netmesh-speedtest.pregi.net/" +  Aa.Upload + "?n=" + Math.random(), !0);
-            v[b].lengthComputable = true;
+            v[b].open("POST", d.testServer.url + "/" + Aa.Upload + "?n=" + Math.random(), !0);
             v[b].upload.onprogress = function (h) {
                 "initup" == n && void 0 === u && (n = "Uploading");
                 if (P >= ulDuration) return v[b].abort(), v[b] = null, v[b] = void 0, delete v[b], !1;
@@ -1193,6 +1279,10 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 if (isNaN(u) || !isFinite(u) || 0 > u) return !1;
                 J += u;
                 l = h.loaded
+
+                // d.showStatus(d.formatBytes(J));
+                webSpeedTestResponse.results.upload.dataUsed = d.formatBytes(J);
+                // console.log("data transferred UPLOAD", d.formatBytes(J), J);
 
                 // d.uploadDataTrasferSize += h.loaded;
             };
@@ -1205,20 +1295,20 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 v[b] && (v[b].abort(), (v[b] = null), (v[b] = void 0), delete v[b]);
                 1 === G && z(b);
 
-                console.log("XMLHttpRequest onload UPLOAD", x.loaded, ulEstimatedMeasurementCount);
+                // console.log("data transferred UPLOAD onload", x.loaded, ulEstimatedMeasurementCount);
             };
             v[b].onerror = function (h) {
                 P <= ulDuration && z(b);
 
-                console.log("on-error", "UPLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
-                d.ConnectionError();
+                // console.log("on-error", "UPLOAD error. mali. lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
+                d.ConnectionError("Network Error", "Mali. Lagi ka na lang mali kaya ang lamig-lamig lagi ng Pasko mo...");
             };
             v[b].setRequestHeader("Content-Type", "application/octet-stream");
             
-            v[b].timeout = 30000; // 10 seconds
+            v[b].timeout = 60000; // 10 seconds
             v[b].ontimeout = function (h) {
                 console.log("on-timeout", "UPLOAD awat na bhie 'wag ka ng maghintay. sanay ka naman laging mag-isa...");
-                d.ConnectionError();
+                d.ConnectionError("Awat na bhie", "'Wag ka nang magpanggap na masipag. Naiintindihan ka namin sa 2023 na lang 'yan... (Network Timeout)");
             };
 
             0 < b && 17E3 >= J || v[b].send(ua)
@@ -1264,8 +1354,8 @@ window.addEventListener('flutterInAppWebViewPlatformReady', function (_) {
                 "Stop" != ha && I.abort();
 
                 d.pingProgressBarElement.style.width = `${H.length / pingSamples * 100}%`;
-                
-                I.open(pingMethod, b[pingFile] + "?n=" + Math.random(), !0);
+
+                I.open(pingMethod, d.testServer.url + "/" + b[pingFile] + "?n=" + Math.random(), !0);
                 I.timeout = pingTimeOut;
                 var Ea = window.performance.now();
                 I.send();
