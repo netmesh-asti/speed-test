@@ -23,7 +23,7 @@ modals.forEach(modal => {
 });
 
 document.getElementById('try-again-button').onclick = function () {
-  window.top.location = '/';
+  document.location.href = '?r';
 }
 
 document.getElementById('change-test-server-button').onclick = function () {

@@ -65,7 +65,7 @@
     // If Server not responded within 5 Seconds for any requests we send ('pingSamples' times)
     // We will show Network Error, you can change the limit here.
     // In milliseconds, if you need to set 6 seconds. Change value to 6000.
-    var pingTimeOut = 2000; 
+    var pingTimeOut = 5000; 
 
     // Set a PingTimeout dynamically by passing "Out" or "O" as a URL Parameter    
     var setPingTimeout = true;
@@ -173,6 +173,9 @@
               <span class="speed-unit">Mbps</span>
               <span class="speed-label">&nbsp;DOWNLOAD</span>
             </div>
+            <div class="data-used-container">
+              <span id="downloadDataUsed" class="data-used-value">---</span>
+            </div>
             <div class="ping-jitter-container">
               <span class="speed-response-label">Ping</span>
               <span id="pingResult" class="ping-jitter-value">---</span>
@@ -193,6 +196,9 @@
             <div id="upRestxt" class="speed-value">---</div><div>
               <span class="speed-unit">Mbps</span>
               <span class="speed-label">&nbsp;UPLOAD</span>
+            </div>
+            <div class="data-used-container">
+              <span id="uploadDataUsed" class="data-used-value">---</span>
             </div>
             <div class="ping-jitter-container">
               <span class="speed-response-label">Jitter</span>
@@ -325,14 +331,9 @@
               <path fill="none" d="M64.32,256.41a137,137,0,1,1,192.09-24.8l-.07.09a134.45,134.45,0,0,1-24.71,24.71" />
             </symbol>
 
-            <symbol id="oDoMeter" viewBox="0 0 316 316">
-              <g id="gauge-meter-scale">
-              </g>
-              <text id="oDoLiveSpeed" class="oDoLive-Speed" transform="translate(158 148) scale(1 1)" dominant-baseline="middle">
-                ...
-              </text>
-              <text id="oDoLiveStatus" class="oDoLive-Status" transform="translate(158 176) scale(1 1)" dominant-baseline="middle"></text>
-            </symbol>
+            <text id="speedTestStatus" dominant-baseline="middle" transform="translate(158 300)" viewBox="0 0 316 316">
+              ...
+            </text>
         
             <!-- <symbol id="progressBar" viewBox="0 0 293.53 18.38">
               <defs>
@@ -551,7 +552,14 @@
           
           <use id="mainGaugebg-Desk" class="main-Gaugebg" xlink:href="#mainGaugebg" viewBox="0 0 316 316"/>
           <use id="mainGaugeWhite-Desk" class="main-GaugeWhite" xlink:href="#mainGaugeWhite" viewBox="0 0 316 316"/>
-          <use xlink:href="#oDoMeter" class="oDo-Meter" viewBox="0 0 316 316" opacity="0">
+
+          <g id="oDoMeter" viewBox="0 0 316 316" opacity="0">
+            <g id="gauge-meter-scale">
+            </g>
+            <text id="oDoLiveSpeed" class="oDoLive-Speed" fill="var(--on-surface-color)" transform="translate(158 148) scale(1 1)" dominant-baseline="middle">
+            </text>
+            <text id="oDoLiveStatus" class="oDoLive-Status" transform="translate(158 176) scale(1 1)" dominant-baseline="middle"></text>
+
             <animate
               class="gauge-preparing"
               begin="indefinite"
@@ -581,6 +589,27 @@
               keyTimes="0;1"
               keySplines="0.3 0.3 0.1 1"
               to="0"
+              fill="freeze"
+            />
+          </g>
+
+          <!-- <use xlink:href="#oDoMeter" >
+            
+          </use> -->
+          <use xlink:href="#speedTestStatus" class="speed-test-status" opacity="0" visibility="hidden">
+            <animate
+              begin="indefinite"
+              class="gauge-connecting"
+              attributeName="opacity"
+              dur="300ms"
+              to="1"
+              fill="freeze"
+            />
+            <animate
+              begin="indefinite"
+              class="gauge-connecting"
+              attributeName="visibility"
+              to="visible"
               fill="freeze"
             />
           </use>
@@ -778,6 +807,8 @@
               <animate begin="indefinite" class="gauge-connecting" attributeName="visibility" to="hidden" fill="freeze" />
             </circle>
           </a>
+          <a>
+          </a>
           <!-- <use id="ConnectErrorDesk" xlink:href="#ConnectError" class="ConnectError" x="135" y="107.8" width="32.21"
             height="41.62"></use> -->
 
@@ -837,7 +868,7 @@
       </div>
       <div class="modal-body text-center">
         <p class="modal-message">
-          Oops! Something went wrong while connecting to the server. Please check your internet connection and try again.
+          Oops! Something went wrong while connecting to the test server. Maybe the server is having an issue.<br><br>You may also check your internet connection, then try again.
         </p>
       </div>
       <div class="modal-footer">

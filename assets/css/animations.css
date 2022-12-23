@@ -70,3 +70,39 @@
 .move-results {
   animation: move-results 0.3s ease-out forwards;
 }
+
+@keyframes finalize-download-speed {
+  from {
+    fill: var(--on-surface-color);
+  }
+  to {
+    fill: var(--download-speed-color);
+  }
+}
+.finalize-download-speed {
+  animation: finalize-download-speed 0.25s ease-out forwards;
+}
+
+@keyframes finalize-upload-speed {
+  from {
+    fill: var(--on-surface-color);
+  }
+  to {
+    fill: var(--upload-speed-color);
+  }
+}
+.finalize-upload-speed {
+  animation: finalize-upload-speed 0.25s ease-out forwards;
+}
+
+@keyframes glow-ping-bar {
+  from {
+    box-shadow: 0 0 12px 1px var(--secondary-color); 
+  }
+  to {
+    box-shadow: 0 0 0px 0px transparent; 
+  }
+}
+.glow-ping-bar {
+  animation: glow-ping-bar 0.2s ease-out forwards;
+}

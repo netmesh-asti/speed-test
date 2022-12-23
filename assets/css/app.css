@@ -65,6 +65,8 @@ html.dark-theme {
   --download-speed-color: #A4C8FF;
   --upload-speed-color: #D5BBFF;
   --max-speed-color: #FFD700;
+
+  --sample-gradient-color: linear-gradient(red, yellow);
 }
 
 body {
@@ -189,13 +191,13 @@ body {
 }
 .speed-connection-progress-names .network-connection-title {
   color: var(--secondary-color);
-  font-size: max(12px, 2.25vh);
+  font-size: max(12px, 2vh);
   margin-right: 12px;
   text-align: start;
 }
 .speed-connection-progress-names .test-server-title {
   color: var(--secondary-color);
-  font-size: max(12px, 2.25vh);
+  font-size: max(12px, 2vh);
   margin-left: 12px;
   text-align: end;
 }
@@ -211,6 +213,16 @@ body {
   bottom: 15px;
   width: 0%;
 }
+/* .ping-progress-bar:before {
+  position: absolute;
+  z-index: -1;
+  top: 0%;
+  left: 0%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(red, navy);
+  content: '';
+} */
 .download-progress-bar {
   display: block;
   position: relative;
@@ -267,7 +279,7 @@ body {
 }
 .ping-jitter-container {
   color: var(--on-surface-color);
-  margin-top: clamp(10px, 2vh, 2vh);
+  margin-top: clamp(4px, 0.8vh, 0.8vh);
   display: flex;
   justify-content: center;
   align-items: baseline;
@@ -278,6 +290,21 @@ body {
   font-weight: 500;
   width: clamp(36px, 16vw, 64px);
   text-align: end;
+}
+.data-used-container {
+  color: var(--secondary-color);
+  margin-top: 0px;
+  font-size: clamp(10px, 1.75vh, 1.75vh);
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+}
+.data-used-value {
+  color: var(--secondary-color);
+  font-size: clamp(10px, 1.7vh, 1.7vh);
+  font-weight: 400;
+  /* width: clamp(88px, 28vw, 68px); */
+  text-align: center;
 }
 .speed-response-label {
   font-size: clamp(10px, 2.1vh, 2.1vh);
@@ -454,14 +481,14 @@ body {
 }
 
 #gauge-meter-scale {
-  font-size: 15px;
+  font-size: 12px;
   fill: var(--speed-number-off-color);
   font-family: Ubuntu;
   font-weight: 400;
 }
 
 .oDoTop-Speed {
-  font-size: 15px;
+  font-size: 12px;
   fill: var(--speed-number-off-color);
   font-family: Ubuntu;
   font-weight: 400;
@@ -470,7 +497,6 @@ body {
 
 .oDoLive-Speed {
   font-size: 44px;
-  fill: var(--on-surface-color);
   font-family: Ubuntu;
   font-weight: 500;
   text-anchor: middle;
@@ -481,6 +507,14 @@ body {
   fill: var(--secondary-color);
   font-family: Ubuntu;
   font-weight: 400;
+  text-anchor: middle;
+}
+
+.speed-test-status {
+  font-size: 14px;
+  fill: var(--secondary-color);
+  font-family: Ubuntu;
+  font-weight: 500;
   text-anchor: middle;
 }
 

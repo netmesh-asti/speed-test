@@ -11,9 +11,6 @@
     }
   }
 
-  window.addEventListener('offline', (e) => { console.log('network-status', 'offline', e); });
-  window.addEventListener('online', (e) => { console.log('network-status', 'online', e); });
-
   // const networkConnectionType = navigator.connection.type;
 
   const startButton = document.getElementById('startButtonDesk');
@@ -50,5 +47,11 @@
     buttonToGaugeGroup.style.opacity = 1;
     buttonToGaugeGroup.style.scale = '1 1';
     buttonToGaugeGroup.style.translate = '0 0';
+  }
+
+  const selectTestServerButton = document.getElementById('select-test-server-button');
+  selectTestServerButton.onclick = function (e) {
+    const testServersSelect = document.getElementById('test-servers-select');
+    document.location.href = testServersSelect.value;
   }
 })(window, document, 'script', 'dataLayer', 'GTM-TNQCBKZ');
